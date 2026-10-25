@@ -1,0 +1,4 @@
+# nyers letöltések és WP-adatok (nem része az oldalnak)
+raw/
+node_modules/
+.DS_Store

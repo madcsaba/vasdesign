@@ -1,0 +1,75 @@
+{
+  "site": {
+    "name": "Vasdesign",
+    "tagline": "Egyedi tervezésű vas- és kovácsoltvas elemek, valamint belsőépítészet a belváros szívében",
+    "phone": "+36 70 411 3230",
+    "phoneHref": "+36704113230",
+    "email": "zafirhomedesign@gmail.com",
+    "address": "1014 Budapest, Úri utca 24. fsz. 5.",
+    "company": "Zafir Home Designer Kft.",
+    "hours": "Telefonon 9:00 és 18:00 között állok rendelkezésre.",
+    "years": "20+",
+    "yearSince": "2004"
+  },
+
+  "services": [
+    {
+      "slug": "terelvalasztok-ajtok",
+      "title": "Vas-üveg ajtók és térelválasztók",
+      "short": "A modern tágas tereket még tágasabbá tehetjük, ha minél több üvegfelületet csempészünk bele — a fém keret rusztikusabbá, karakteresebbé teszi az üveget.",
+      "body": "A nyitott, átlátható terek korában nagy hangsúlyt kapnak a térelválasztók, a vaskeretes üvegajtók és a hightech vaspolcok. Ezt a modern letisztultságot követve tervezek és kivitelezek egyedi térelválasztó ajtókat, vas-üveg polcokat és bejárati, valamint beltéri ajtókat — romantikustól a minimalistáig.",
+      "img": "ajtok"
+    },
+    {
+      "slug": "galeriak",
+      "title": "Vasdesign galéria térnövelőként",
+      "short": "Ha 4 méteres vagy annál magasabb a lakás, egy ultramodern fémdesign állógaléria egyszerre háló, dolgozószoba és látványelem.",
+      "body": "A minimál stílusú, exkluzív érzést keltő vasgaléria klasszikus és modern lakásokban egyaránt emeli a tér fényét, tágasságát és eleganciáját. Attraktív, látványos, mégis könnyedén tisztán tartható — beleszervezhetünk egy hangulatos hálószobát vagy irodát. Egyedi elképzelését megvalósítom, kérjen árajánlatot.",
+      "img": "galeria"
+    },
+    {
+      "slug": "miniwellness",
+      "title": "Mini wellness fürdőszobák",
+      "short": "Rohanó, stresszel teli napjainkban fontos, hogy legyen egy nyugalommal átszőtt életterünk — otthoni mini wellness, akár a legkisebb fürdőben is.",
+      "body": "A szokványos fürdőszoba újragondolásából vagy egy teljesen új fürdő megtervezéséből csodás anyagokkal, relaxáló fénnyel, wellness zuhany-esőztetővel FLOW-t teremtek. Már a legkisebb terű lakásokban is van lehetőség nyugtató relax fényekkel ötvözött kialakításra, hogy testünket és lelkünket otthon is kényeztethessük.",
+      "img": "furdoszoba"
+    },
+    {
+      "slug": "belvarosi-teraszok",
+      "title": "Belvárosi teraszok",
+      "short": "Mediterrán mini teraszok, ahol a négy elem — víz, föld, levegő, tűz — harmonikus egyensúlya akár egy egészen kicsi téren is megteremthető.",
+      "body": "Alapjában véve én magam is urbánus lélek vagyok, de ahhoz, hogy ezt a belvárosban szabadon megélhessem, szükségem van arra, hogy erősen jelen legyen a négy elem. Ez az egyensúly akár egy egészen kicsi teraszon is előállítható: a leander alatt lapos kőtálban csillog a friss víz, ha pedig gyertyát gyújtunk, teljes lesz a harmónia.",
+      "img": "terasz"
+    },
+    {
+      "slug": "lakasatalakitas",
+      "title": "Lakásátalakítás, felújítás",
+      "short": "Szép, elegáns, okos, tágas — teljes körű belsőépítészeti tervezés és generálkivitelezés a belváros szívében.",
+      "body": "A Broadway közelében, egy földszinti adottságait kihasználó luxus minivilla hangulatú kis apartman teljes körű generálkivitelezését végeztem: falak átmozgatása, villanyvezetékek, szigetelések, hightech nyílászárók, magas minőségű burkolatok, design világítások, wellness hangulatú relax fénymegoldások és innovatív fűtéstechnika. Az egész lakásban többféle fénymegoldást alakítottam ki — a fehér napfényhatástól az esti meleg, hangulatos fényekig.",
+      "img": "referencia-lakas"
+    },
+    {
+      "slug": "lampa-feny",
+      "title": "Lámpák, design tárgyak",
+      "short": "Minimál, modern — vas és vászon. Egy látványos, design függőlámpával megbolondíthatjuk a letisztult tereket.",
+      "body": "A lakás ékességei a hangulatos lámpák, a nyílászáró-megoldások és a térelválasztók, amik igazán izgalmassá teszik a teret. Exkluzív design tárgyak, gyönyörű matériák — vas, fa, üveg, kő, falburkolatok, drapériák —, valamint egzotikus, orientál és antik lakberendezési tárgyak Peru, Tibet, Vietnam, Thaiföld és Hollandia tájairól.",
+      "img": "kiegeszitok"
+    }
+  ],
+
+  "process": [
+    { "t": "Nézz szét", "d": "Böngéssz az oldalon, és ha megtetszik valami, írj egy üzenetet." },
+    { "t": "Személyes egyeztetés", "d": "Találkozunk, és pontosítjuk a részleteket, a méreteket és a pontos alapanyagokat." },
+    { "t": "Megrendelés, ütemezés", "d": "Leadásra kerül a megrendelés, és rögzítjük az elkészítés ütemezését." },
+    { "t": "Átvétel", "d": "Átveszed a megrendelt vas design elemet — készen, beépítve." }
+  ],
+
+  "pillars": [
+    { "t": "Több mint 20 év tapasztalat", "d": "Korlátok, előtetők, ablakrácsok, vas bejárati és beltéri ajtók, térelválasztók — a romantikustól a minimalistáig." },
+    { "t": "Tervezés és kivitelezés egy kézben", "d": "Az ötlettől a beépítésig magam végigkísérem a projektet, így nincs elveszett információ a tervező és a kivitelező között." },
+    { "t": "Anyagok harmóniája", "d": "Az üveg, a fa, a kő és az antik tárgyak egyensúlya a vassal emeli a tér eleganciáját és eklektikáját." }
+  ],
+
+  "quote": "Azt tűztem ki célul, hogy a belvárosi lakásokba becsempésszem a természetet és a wellness érzését.",
+  "about": "Mediterrán mini teraszokat, exkluzív relaxációs fürdőket és zuhanyozókat tervezek az urbánus miliőbe. Az üveg és fa elemek, antik tárgyak és művészeti alkotások egyensúlya a vassal emeli a tér eleganciáját."
+}
