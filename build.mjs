@@ -386,7 +386,6 @@ function galleryPage() {
     ['furdoszoba', 'Mini wellness fürdőszobák'],
     ['galeria', 'Vas galériák'],
     ['terasz', 'Belvárosi teraszok'],
-    ['kiegeszitok', 'Design tárgyak, lakberendezés'],
   ];
   const secs = cats.map(([cat, label]) => {
     const n = galImgs(cat).length;
