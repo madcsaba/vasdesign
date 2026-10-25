@@ -41,6 +41,39 @@
     reveals.forEach(function (el) { el.classList.add('in'); });
   }
 
+  // ---------- E-mail összeállítása (robotok ellen) ----------
+  // A HTML-ben a cím fordított részekben szerepel (data-u / data-d), itt állítjuk össze.
+  function emailCim(a) {
+    return a.getAttribute('data-u').split('').reverse().join('') + '@' +
+           a.getAttribute('data-d').split('').reverse().join('');
+  }
+  document.querySelectorAll('a.mail-link').forEach(function (a) {
+    var cim = emailCim(a);
+    a.setAttribute('href', 'mailto:' + cim);
+    a.removeAttribute('data-r');
+  });
+
+  // ---------- Ajánlatkérő űrlap → saját levelezőprogram ----------
+  var form = document.querySelector('.ajanlat-form');
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var mezok = function (n) { return (form.querySelector('[name=' + n + ']') || {}).value || ''; };
+      var nev = mezok('nev'), email = mezok('email'), targy = mezok('targy'), uzenet = mezok('uzenet');
+      if (!nev || !email || !uzenet) {
+        form.reportValidity && form.reportValidity();
+        return;
+      }
+      var links = document.querySelectorAll('a.mail-link');
+      var cim = links.length ? emailCim(links[0]) : '';
+      var targyMezo = targy || ('Ajánlatkérés — ' + nev);
+      var test = 'Név: ' + nev + '\nE-mail: ' + email + '\n\n' + uzenet;
+      window.location.href = 'mailto:' + cim +
+        '?subject=' + encodeURIComponent(targyMezo) +
+        '&body=' + encodeURIComponent(test);
+    });
+  }
+
   // Lightbox — egyszerű, akadálymentes
   var imgs = document.querySelectorAll('[data-lightbox]');
   if (imgs.length) {

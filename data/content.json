@@ -6,10 +6,15 @@
     "phoneHref": "+36704113230",
     "email": "zafirhomedesign@gmail.com",
     "address": "1014 Budapest, Úri utca 24. fsz. 5.",
-    "company": "Zafir Home Designer Kft.",
+    "addressStreet": "Úri utca 24. fsz. 5.",
+    "addressCity": "Budapest",
+    "addressZip": "1014",
+    "company": "Aura Home Design Kft.",
     "hours": "Telefonon 9:00 és 18:00 között állok rendelkezésre.",
+    "openingHours": "Mo-Fr 09:00-18:00",
     "years": "20+",
-    "yearSince": "2004"
+    "yearSince": "2004",
+    "url": "https://madcsaba.github.io/vasdesign"
   },
 
   "services": [

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://madcsaba.github.io/vasdesign/sitemap.xml
