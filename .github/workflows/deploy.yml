@@ -25,8 +25,6 @@ jobs:
       - name: Oldal generálása
         run: node build.mjs
       - uses: actions/configure-pages@v5
-        with:
-          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: public
