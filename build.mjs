@@ -18,6 +18,11 @@ const CAT = existsSync(katUtak[0]) || existsSync(katUtak[1])
   : {};
 const SITE = C.site;
 const URL_ALAP = (SITE.url || '').replace(/\/$/, '');
+// Belső útvonalak alapja (pl. /vasdesign a GitHub Pages project oldalnál).
+// Helyi előnézethez: BASE= node build.mjs — akkor minden marad a gyökérben.
+const BASE = 'BASE' in process.env
+  ? process.env.BASE
+  : new URL(SITE.url || 'http://x/').pathname.replace(/\/$/, '');
 
 // ---------- segédek ----------
 const esc = (s) => String(s ?? '')
@@ -548,6 +553,13 @@ function contactPage() {
 
 // ---------- mentés + SEO fájlok ----------
 async function write(rel, html) {
+  // Belső hivatkozások alapútvonal-elve (GitHub Pages: /vasdesign/...);
+  // helyi előnézetnél BASE üres, tehát minden a gyökérben marad.
+  if (BASE) {
+    html = html
+      .replace(/href="\//g, `href="${BASE}/`)
+      .replace(/src="\//g, `src="${BASE}/`);
+  }
   const p = path.join(OUT, rel);
   await mkdir(path.dirname(p), { recursive: true });
   await writeFile(p, html);
