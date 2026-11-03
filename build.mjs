@@ -46,7 +46,6 @@ const ALT_KULCS = {
   'furdoszoba': 'mini wellness fürdőszoba tervezés és kivitelezés',
   'galeria': 'egyedi vas loft galéria tervezés',
   'terasz': 'belvárosi terasz kialakítása',
-  'kiegeszitok': 'design lámpa és lakberendezési tárgy',
   'ajtok': 'vas-üveg ajtó és térelválasztó',
   'lakasban': 'design tárgyak a lakásban',
   'lampa': 'design függőlámpa és csillár',
