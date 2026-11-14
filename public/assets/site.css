@@ -21,7 +21,7 @@
   --shadow: 0 1px 2px rgba(35,32,29,.04), 0 8px 28px rgba(35,32,29,.06);
   --shadow-lg: 0 2px 6px rgba(35,32,29,.06), 0 24px 60px rgba(35,32,29,.12);
 
-  --display: "Fraunces", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  --display: "Jost", "Futura", "Century Gothic", Avenir, sans-serif;
   --body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
@@ -58,6 +58,12 @@ a:hover { color: var(--accent); }
   background: var(--ink); color: #fff; padding: 12px 18px; border-radius: 0 0 var(--r) 0;
 }
 .skip:focus { left: 0; }
+
+/* Csak képernyőolvasónak: nem látható, de olvasható */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
 
 /* ---------- Fejléc ---------- */
 .site-head {
@@ -182,6 +188,45 @@ section.tight { padding: clamp(40px, 6vw, 72px) 0; }
 .card .more { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; font-size: 14px; font-weight: 500; color: var(--accent-ink); }
 .card .more::after { content: "→"; transition: transform .2s ease; }
 .card:hover .more::after { transform: translateX(3px); }
+
+/* ---------- Galéria: kereső és kategóriaszűrés ---------- */
+.gal-keres {
+  display: flex; align-items: center; gap: 10px; position: relative;
+  background: #fff; border: 1px solid var(--line); border-radius: 999px;
+  padding: 4px 6px 4px 18px; max-width: 520px;
+}
+.gal-keres .ico { width: 18px; height: 18px; color: var(--ink-3); flex: 0 0 auto; }
+.gal-keres input {
+  flex: 1; min-width: 0; border: 0; background: transparent; outline: none;
+  font: inherit; font-size: 15px; color: var(--ink); padding: 11px 0;
+}
+.gal-keres input::placeholder { color: var(--ink-3); }
+.gal-keres input::-webkit-search-cancel-button { display: none; }
+.gal-keres:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.gal-torol {
+  border: 0; background: var(--bg-2); color: var(--ink-2); border-radius: 999px;
+  font: inherit; font-size: 13px; padding: 7px 14px; cursor: pointer; flex: 0 0 auto;
+}
+.gal-torol:hover { background: var(--line); color: var(--ink); }
+
+.gal-allas { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.gal-allas button {
+  border: 1px solid var(--line); background: #fff; border-radius: 999px;
+  font: inherit; font-size: 13.5px; color: var(--ink-2); padding: 8px 15px; cursor: pointer;
+  transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+.gal-allas button:hover:not(:disabled) { border-color: var(--accent); color: var(--ink); }
+.gal-allas button.on { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+.gal-allas button:disabled { opacity: .45; cursor: default; }
+
+.gal-hint { font-size: 14px; color: var(--ink-3); margin: 14px 0 0; min-height: 1.3em; }
+.gal-hint:empty { margin: 0; }
+
+@media (max-width: 560px) {
+  .gal-keres { max-width: none; }
+  .gal-allas { gap: 6px; }
+  .gal-allas button { font-size: 12.5px; padding: 7px 12px; }
+}
 
 /* ---------- Galéria ---------- */
 .gallery { display: grid; grid-template-columns: repeat(12, 1fr); gap: 10px; }

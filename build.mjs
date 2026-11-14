@@ -57,18 +57,26 @@ const ALT_KULCS = {
 };
 const altKeszito = (cat) => `${SITE.name} referenciamunka — ${ALT_KULCS[cat] || cat.replace(/-/g, ' ')}`;
 
+/**
+ * Egy galéria kép-cseléje. A `data-keres` mező tartalmazza a kereséshez
+ * használható szövegeket (fájlnév, kategória, alt-szöveg) – ezek alapján
+ * szűr a kereső a böngészőben, új hálózati kérés nélkül.
+ */
+function galleryCell(cat, f, i, { lazy = true } = {}) {
+  const alt = altKeszito(cat);
+  const cls = i % 5 === 0 ? 'g-wide' : (i % 2 === 0 ? 'g-sq' : 'g-tall');
+  const keres = [f.replace(/\.webp$/, '').replace(/[-_]/g, ' '), ALT_KULCS[cat] || cat.replace(/-/g, ' ')].join(' | ');
+  return `<a class="${cls}" href="/img/opt/${esc(f)}" data-lightbox="g-${esc(cat)}" data-keres="${esc(keres)}">` +
+    `<img src="/img/opt/${esc(f)}" alt="${esc(alt)} ${i + 1}. kép" title="${esc(alt)}"` +
+    ` width="1200" height="800" ${lazy ? 'loading="lazy" decoding="async"' : ''}>` +
+    `</a>`;
+}
+
 function gallery(cat, { limit = 0, lazy = true } = {}) {
   let imgs = galImgs(cat);
   if (limit) imgs = imgs.slice(0, limit);
   if (!imgs.length) return '';
-  const alt = altKeszito(cat);
-  const cells = imgs.map((f, i) => {
-    const cls = i % 5 === 0 ? 'g-wide' : (i % 2 === 0 ? 'g-sq' : 'g-tall');
-    return `<a class="${cls}" href="/img/opt/${esc(f)}" data-lightbox="g-${esc(cat)}">` +
-      `<img src="/img/opt/${esc(f)}" alt="${esc(alt)} ${i + 1}. kép" title="${esc(alt)}"` +
-      ` width="1200" height="800" ${lazy ? 'loading="lazy" decoding="async"' : ''}>` +
-      `</a>`;
-  }).join('\n');
+  const cells = imgs.map((f, i) => galleryCell(cat, f, i, { lazy })).join('\n');
   return `<div class="gallery">${cells}</div>`;
 }
 
@@ -116,7 +124,7 @@ function head({ title, desc, current, kulcsszavak, jsonld = [] }) {
 <meta name="twitter:image" content="${esc(ogKep)}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/site.css">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 ${ldSorok}
@@ -395,16 +403,18 @@ function galleryPage() {
     const n = galImgs(cat).length;
     if (!n) return '';
     return `
-<section class="tight">
+<section class="tight" data-gal-cat="${esc(cat)}">
   <div class="wrap">
     <div class="section-head">
       <h2>${esc(label)}</h2>
-      <p class="note">${n} munka</p>
+      <p class="note" data-gal-count="${esc(cat)}">${n} munka</p>
     </div>
     ${gallery(cat)}
   </div>
 </section>`;
   }).join('\n');
+
+  const total = cats.reduce((n, [cat]) => n + galImgs(cat).length, 0);
 
   const ld = [{
     '@context': 'https://schema.org',
@@ -426,7 +436,22 @@ function galleryPage() {
   <div class="wrap section-head">
     <p class="eyebrow">Portfólió</p>
     <h1>Galéria</h1>
-    <p class="lede">Több száz kész munka — kattintson a képre a nagy nézethez.</p>
+    <p class="lede">Több száz kész munka — keress a képekre, és kattintson a nagy nézethez.</p>
+  </div>
+</section>
+<section class="tight">
+  <div class="wrap">
+    <form class="gal-keres" role="search" id="gal-keres">
+      <label class="sr-only" for="gal-q">Keresés a galériában</label>
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input type="search" id="gal-q" name="q" placeholder="Keresés: terasz, fürdőszoba, galéria, IMG_2421…" autocomplete="off">
+      <button type="button" class="gal-torol" id="gal-torol" hidden>Törlés</button>
+    </form>
+    <div class="gal-allas" role="group" aria-label="Szűrés kategória szerint" id="gal-kategoriak">
+      <button type="button" class="on" data-cat="osszes">Mind (${total})</button>
+      ${cats.map(([cat, label]) => `<button type="button" data-cat="${esc(cat)}">${esc(label)} (${galImgs(cat).length})</button>`).join('\n      ')}
+    </div>
+    <p class="gal-hint" id="gal-hint" role="status" aria-live="polite"></p>
   </div>
 </section>` + secs + foot();
 }
@@ -609,3 +634,32 @@ await writeFile(path.join(OUT, '.nojekyll'), '');
 
 console.log('✓ 6 oldal + sitemap.xml + robots.txt + 404.html generálva');
 console.log('  képek kategóriánként:', Object.entries(CAT).map(([k, v]) => `${k}=${v.length}`).join(', '));
+
+// ---------- duplikált képek ellenőrzése ----------
+// A galéria ugyanaz a kép több WordPress-galériából is származhat; a
+// `dedup.mjs` a legrégebbi (eredeti) feltöltést tartja meg. Ez a lépés
+// megbuktatja a buildet, ha duplikátum maradna bent.
+{
+  const { createHash } = await import('node:crypto');
+  const { readFile } = await import('node:fs/promises');
+  const { existsSync } = await import('node:fs');
+  const seen = new Map();
+  const dupes = [];
+  for (const [cat, list] of Object.entries(CAT)) {
+    for (const x of list) {
+      const p = path.join(PUB, 'img', 'opt', x.file);
+      if (!existsSync(p)) { dupes.push(`${cat}:${x.file} (fájl nincs)`); continue; }
+      const h = createHash('md5').update(await readFile(p)).digest('hex');
+      if (!seen.has(h)) seen.set(h, []);
+      seen.get(h).push(`${cat}:${x.file}`);
+    }
+  }
+  for (const [, list] of seen) if (list.length > 1) dupes.push(list.join(' == '));
+  if (dupes.length) {
+    console.error('✗ duplikált kép van az adatcsomagban:');
+    for (const d of dupes) console.error('   ' + d);
+    console.error('  Futtasd: node dedup.mjs');
+    process.exit(1);
+  }
+  console.log('✓ ellenőrzés: nincs duplikált kép a galériában');
+}

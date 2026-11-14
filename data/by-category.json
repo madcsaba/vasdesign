@@ -1,18 +1,4 @@
 {
-  "fooldal": [
-    {
-      "file": "home-malte-wingen-j6fmt2tossa-unsplash.webp",
-      "w": 1707,
-      "h": 2560,
-      "bytes": 107604
-    },
-    {
-      "file": "vas-es-uveg-design-ajtok-unnamed-10-2.webp",
-      "w": 214,
-      "h": 288,
-      "bytes": 126534
-    }
-  ],
   "referencia-lakas": [
     {
       "file": "lakasatalakitas-img-1785.webp",
@@ -57,12 +43,6 @@
       "bytes": 206660
     },
     {
-      "file": "lakasatalakitas-img-2421.webp",
-      "w": 1200,
-      "h": 800,
-      "bytes": 144248
-    },
-    {
       "file": "lakasatalakitas-img-2423.webp",
       "w": 1200,
       "h": 800,
@@ -73,12 +53,6 @@
       "w": 2016,
       "h": 1512,
       "bytes": 98452
-    },
-    {
-      "file": "lakasatalakitas-5.webp",
-      "w": 1576,
-      "h": 1512,
-      "bytes": 219178
     },
     {
       "file": "lakasatalakitas-5a.webp",
@@ -135,40 +109,10 @@
       "bytes": 112216
     },
     {
-      "file": "lakasatalakitas-img-0701.webp",
-      "w": 1920,
-      "h": 2560,
-      "bytes": 103966
-    },
-    {
-      "file": "lakasatalakitas-img-0748.webp",
-      "w": 2473,
-      "h": 2560,
-      "bytes": 136142
-    },
-    {
-      "file": "lakasatalakitas-img-5139.webp",
-      "w": 1920,
-      "h": 2560,
-      "bytes": 186112
-    },
-    {
-      "file": "lakasatalakitas-img-5282.webp",
-      "w": 1919,
-      "h": 2560,
-      "bytes": 102830
-    },
-    {
       "file": "lakasatalakitas-img-5325.webp",
       "w": 1920,
       "h": 2560,
       "bytes": 130710
-    },
-    {
-      "file": "lakasatalakitas-img-5606.webp",
-      "w": 1923,
-      "h": 2560,
-      "bytes": 151088
     },
     {
       "file": "lakasatalakitas-img-1516.webp",
@@ -201,12 +145,6 @@
       "w": 1280,
       "h": 960,
       "bytes": 132896
-    },
-    {
-      "file": "vas-design-galeria-img-2421-1.webp",
-      "w": 1200,
-      "h": 800,
-      "bytes": 144248
     },
     {
       "file": "vas-design-galeria-img-0947.webp",
@@ -345,12 +283,6 @@
       "bytes": 131098
     },
     {
-      "file": "miniwellness-furdoszoba-megoldasok-04.webp",
-      "w": 1853,
-      "h": 2560,
-      "bytes": 120882
-    },
-    {
       "file": "miniwellness-furdoszoba-megoldasok-06.webp",
       "w": 2011,
       "h": 2560,
@@ -361,12 +293,6 @@
       "w": 1444,
       "h": 2560,
       "bytes": 105158
-    },
-    {
-      "file": "miniwellness-furdoszoba-megoldasok-img-4127-1.webp",
-      "w": 1832,
-      "h": 2560,
-      "bytes": 200260
     },
     {
       "file": "miniwellness-furdoszoba-megoldasok-img-4147.webp",
@@ -603,26 +529,6 @@
       "w": null,
       "h": null,
       "bytes": 79580
-    }
-  ],
-  "lakasban": [
-    {
-      "file": "vas-es-uveg-design-ajtok-img-8432-1-727x1024.webp",
-      "w": null,
-      "h": null,
-      "bytes": 38178
-    },
-    {
-      "file": "vas-es-uveg-design-ajtok-img-8432-1.webp",
-      "w": 750,
-      "h": 1057,
-      "bytes": 40606
-    },
-    {
-      "file": "vas-es-uveg-design-ajtok-img-8432-1-213x300.webp",
-      "w": null,
-      "h": null,
-      "bytes": 29374
     }
   ]
 }
