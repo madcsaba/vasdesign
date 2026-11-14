@@ -5,6 +5,7 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
+import { feluletLap } from './feluletkezeles.mjs';
 
 const ROOT = new URL('.', import.meta.url).pathname;
 const PUB = path.join(ROOT, 'public');
@@ -28,6 +29,11 @@ const BASE = 'BASE' in process.env
 const esc = (s) => String(s ?? '')
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const galImgs = (cat) => (CAT[cat] || []).map((x) => x.file);
+// Galériába csak a kellően nagy képek kerülnek (a 300 px körüli WP-maradékok nem).
+const MIN_KEP = 600;
+const galKepek = (cat) => (CAT[cat] || []).filter((x) => Math.max(x.w || 0, x.h || 0) >= MIN_KEP).map((x) => x.file);
+const vanKep = (f) => Object.values(CAT).some((l) => l.some((x) => x.file === f));
+const kep = (f, ...tartalek) => [f, ...tartalek].find((x) => x && vanKep(x)) || '';
 
 // E-mail elrejtése a robotok elől: a HTML forrásban nincs "xxx@yyy.hu" mintázat.
 // A link szövege emberséges kódolás („kukac"), a valódi cím fordított részekben
@@ -73,7 +79,7 @@ function galleryCell(cat, f, i, { lazy = true } = {}) {
 }
 
 function gallery(cat, { limit = 0, lazy = true } = {}) {
-  let imgs = galImgs(cat);
+  let imgs = galKepek(cat);
   if (limit) imgs = imgs.slice(0, limit);
   if (!imgs.length) return '';
   const cells = imgs.map((f, i) => galleryCell(cat, f, i, { lazy })).join('\n');
@@ -85,6 +91,7 @@ const NAV = [
   ['/', 'Főoldal'],
   ['/szolgaltatasok/', 'Szolgáltatások'],
   ['/galeria/', 'Galéria'],
+  ['/feluletkezeles/', 'Felületkezelés'],
   ['/rolam/', 'Rólam'],
   ['/kapcsolat/', 'Kapcsolat'],
 ];
@@ -122,9 +129,7 @@ function head({ title, desc, current, kulcsszavak, jsonld = [] }) {
 <meta name="twitter:title" content="${esc(title)}">
 <meta name="twitter:description" content="${esc(desc)}">
 <meta name="twitter:image" content="${esc(ogKep)}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" href="/assets/fonts/jost-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site.css">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 ${ldSorok}
@@ -151,13 +156,14 @@ const foot = () => `
     <div class="foot-grid">
       <div class="foot-brand">
         <b>VASDESIGN</b>
-        <p>${esc(SITE.tagline)}. Tervezés és kivitelezés egy kézben, több mint ${esc(SITE.years)} év tapasztalattal.</p>
+        <p>${esc(SITE.tagline)}. Tervezés és kivitelezés egy kézben, ${esc(SITE.yearSince)} óta.</p>
       </div>
       <div class="foot-col">
         <h4>Oldalak</h4>
         <ul>
           <li><a href="/szolgaltatasok/">Szolgáltatások</a></li>
           <li><a href="/galeria/">Galéria</a></li>
+          <li><a href="/feluletkezeles/">Felületkezelés</a></li>
           <li><a href="/rolam/">Rólam</a></li>
           <li><a href="/kapcsolat/">Kapcsolat</a></li>
         </ul>
@@ -178,6 +184,7 @@ const foot = () => `
     </div>
   </div>
 </footer>
+<a class="call-fab" href="tel:${esc(SITE.phoneHref)}" aria-label="Hívás: ${esc(SITE.phone)}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.5 2.1L8.1 9.6a16 16 0 0 0 6 6l1.1-1.1a2 2 0 0 1 2.1-.5c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.7 2Z"/></svg>Hívás</a>
 <script src="/assets/site.js" defer></script>
 </body>
 </html>`;
@@ -191,7 +198,7 @@ function vallalasLd() {
     legalName: SITE.company,
     description: SITE.tagline,
     url: URL_ALAP + '/',
-    telephone: '+' + SITE.phoneHref,
+    telephone: SITE.phoneHref,
     image: URL_ALAP + (galImgs('referencia-lakas')[0] ? '/img/opt/' + galImgs('referencia-lakas')[0] : ''),
     priceRange: 'Egyedi árajánlat alapján',
     address: {
@@ -202,12 +209,6 @@ function vallalasLd() {
       addressCountry: 'HU',
     },
     areaServed: { '@type': 'City', name: 'Budapest' },
-    openingHoursSpecification: [{
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-      opens: '09:00',
-      closes: '18:00',
-    }],
     sameAs: [],
     hasOfferCatalog: {
       '@type': 'OfferCatalog',
@@ -221,17 +222,42 @@ function vallalasLd() {
   };
 }
 
-// ---------- lapok ----------
-function homePage() {
-  const svcCards = C.services.map((s) => `
+// ---------- szolgáltatáskártya ----------
+// Vonalrajz azokhoz a szolgáltatásokhoz, amelyekhez még nincs saját fotó.
+const ILLU = {
+  fence: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true">
+    <path d="M10 118h220M10 40h220M10 104h220"/>
+    ${Array.from({ length: 11 }, (_, i) => { const x = 20 + i * 20; return `<path d="M${x} 124V34"/><path d="M${x - 5} 34l5-12 5 12"/>`; }).join('')}
+    <circle cx="60" cy="72" r="10"/><circle cx="120" cy="72" r="10"/><circle cx="180" cy="72" r="10"/></svg>`,
+};
+function svcCard(s) {
+  const f = galImgs(s.img)[0];
+  const fig = f
+    ? `<figure><img src="/img/opt/${esc(f)}" alt="${esc(altKeszito(s.img))}" title="${esc(s.title)}" width="1200" height="800" loading="lazy" decoding="async"></figure>`
+    : `<figure class="illu">${ILLU[s.illu] || ''}</figure>`;
+  return `
     <a class="card" href="/szolgaltatasok/#${esc(s.slug)}">
-      <figure><img src="/img/opt/${esc(galImgs(s.img)[0] || '')}" alt="${esc(altKeszito(s.img))}" title="${esc(s.title)}" width="1200" height="800" loading="lazy" decoding="async"></figure>
+      ${fig}
       <div class="card-body">
         <h3>${esc(s.title)}</h3>
         <p>${esc(s.short)}</p>
         <span class="more">Részletek</span>
       </div>
-    </a>`).join('');
+    </a>`;
+}
+const GAL_KAT = [
+  ['galeria', 'Vas galériák, lépcsők'],
+  ['ajtok', 'Vas-üveg ajtók, térelválasztók'],
+  ['referencia-lakas', 'Belsőépítészet, lakásátalakítás'],
+  ['furdoszoba', 'Mini wellness fürdőszobák'],
+  ['terasz', 'Belvárosi teraszok'],
+];
+const FOTO_DB = GAL_KAT.reduce((n, [cat]) => n + galKepek(cat).length, 0);
+
+// ---------- lapok ----------
+function homePage() {
+  const vasKartyak = C.services.filter((s) => s.group === 'vas').map((s) => svcCard(s)).join('');
+  const belKartyak = C.services.filter((s) => s.group !== 'vas').map((s) => svcCard(s)).join('');
 
   const pillars = C.pillars.map((p) => `
       <div class="pillar"><h3>${esc(p.t)}</h3><p>${esc(p.d)}</p></div>`).join('');
@@ -258,29 +284,29 @@ function homePage() {
 
   return head({
     title: `${SITE.name} — Egyedi vas- és kovácsoltvas elemek, térelválasztók, galériák, wellness fürdőszobák`,
-    desc: 'Egyedi tervezésű vas- és kovácsoltvas elemek, térelválasztók, vas-üveg ajtók, loft galériák, mini wellness fürdőszobák és belvárosi teraszok Budapesten. Tervezés és kivitelezés egy kézben, 20+ év tapasztalattal.',
-    kulcsszavak: 'vas design, kovácsoltvas, vas-üveg ajtó, térelválasztó, loft galéria, mini wellness fürdőszoba, belvárosi terasz, lakásátalakítás, belsőépítészet Budapest, egyedi fém design, Aura Home Design',
+    desc: 'Egyedi tervezésű vas- és kovácsoltvas elemek: vas-üveg ajtók, térelválasztók, loft galériák, kerítések, korlátok, rácsok, valamint mini wellness fürdőszobák és belvárosi teraszok Budapesten. Tervezés és kivitelezés egy kézben, 20+ év tapasztalattal.',
+    kulcsszavak: 'vas design, kovácsoltvas, vas-üveg ajtó, térelválasztó, loft galéria, kerítés, kapu, korlát, ablakrács, előtető, porfestés, horganyzás, mini wellness fürdőszoba, belvárosi terasz, lakásátalakítás, belsőépítészet Budapest, egyedi fém design, Aura Home Design',
     current: '/',
     jsonld: ld,
   }) + `
-<section class="hero">
+<section class="hero hero-dark">
   <div class="wrap hero-grid">
     <div>
-      <p class="eyebrow">Tervezés és kivitelezés egy kézben</p>
+      <p class="eyebrow">Tervezés és kivitelezés egy kézben, ${esc(SITE.yearSince)} óta</p>
       <h1>Vas, kovácsoltvas, üveg és fa — romantikustól a minimalistáig.</h1>
-      <p class="lede">Egyedi tervezésű vas- és kovácsoltvas elemek gyártása, valamint belsőépítészet a belváros szívében. Korlátok, előtetők, ajtók, térelválasztók, galériák és mini wellness fürdőszobák.</p>
+      <p class="lede">Galériák, lépcsők, vas-üveg ajtók és térelválasztók a lakásba; kerítések, kapuk, korlátok, rácsok és előtetők kívülre. Mindez egyedi tervezéssel, a belváros szívéből — és ha kell, a teljes belsőépítészettel együtt.</p>
       <div class="btn-row">
         <a class="btn" href="/kapcsolat/#ajanlatkeres">Ajánlatot kérek</a>
         <a class="btn ghost" href="/galeria/">Munkáim megtekintése</a>
       </div>
       <div class="hero-stats">
         <div class="stat"><b>${esc(SITE.years)} év</b><span>szakmai tapasztalat</span></div>
-        <div class="stat"><b>620+</b><span>kész munka a portfólióban</span></div>
+        <div class="stat"><b>${FOTO_DB}</b><span>referenciafotó a galériában</span></div>
         <div class="stat"><b>1 kéz</b><span>tervezéstől a beépítésig</span></div>
       </div>
     </div>
     <div class="hero-figure">
-      <img src="/img/opt/${esc(galImgs('referencia-lakas')[0] || galImgs('furdoszoba')[0] || '')}" alt="${esc(altKeszito('referencia-lakas'))}" title="${esc(SITE.name)} — belsőépítészet a belvárosban" width="1200" height="1500" fetchpriority="high" decoding="async">
+      <img src="/img/opt/${esc(kep('loft-galeria-img-5282.webp', galImgs('galeria')[0]))}" alt="${esc(SITE.name)} referenciamunka — egyedi vas lépcső és loft galéria" title="${esc(SITE.name)} — vas lépcső és galéria" width="1919" height="2560" fetchpriority="high" decoding="async">
     </div>
   </div>
 </section>
@@ -292,7 +318,27 @@ function homePage() {
       <h2>Szolgáltatások</h2>
       <p class="lede">Az ötlettől a beépítésig — minden, ami vasból, üvegből és szenvedéllyel készül.</p>
     </div>
-    <div class="grid grid-3">${svcCards}</div>
+    <div class="group-head"><h3>Vasszerkezetek — bent és kint</h3><p>a fő profil</p></div>
+    <div class="grid grid-3">${vasKartyak}</div>
+    <div class="group-head"><h3>Belsőépítészet</h3><p>a vas köré szervezett terek</p></div>
+    <div class="grid grid-3 small">${belKartyak}</div>
+  </div>
+</section>
+
+<section class="dark">
+  <div class="wrap about-grid">
+    <div>
+      <p class="eyebrow">Felületkezelés</p>
+      <h2>A vas annyit ér, amennyit a felülete</h2>
+      <p class="lede">Beltérben a megjelenés, kültéren a tartósság a döntő. A porfestéstől a tűzihorganyzáson át a nyers, viaszolt acélig összegyűjtöttem, mikor melyiket érdemes választani.</p>
+      <div class="btn-row"><a class="btn" href="/feluletkezeles/">Felületkezelési útmutató</a></div>
+    </div>
+    <ul class="tips">
+      <li><b>Beltér:</b> porfestés, vascsillám festék, nyers acél viasszal vagy lakkal, patinázás.</li>
+      <li><b>Kültér:</b> tűzihorganyzás, duplex rendszer (horganyzás + porfestés), többrétegű korrózióvédő festés.</li>
+      <li><b>Különleges anyagok:</b> corten (időjárásálló) acél és rozsdamentes acél.</li>
+      <li>Az előkészítés (szemcseszórás, zsírtalanítás) adja a tartósság nagy részét.</li>
+    </ul>
   </div>
 </section>
 
@@ -309,7 +355,7 @@ function homePage() {
 <section class="tone">
   <div class="wrap about-grid">
     <div class="about-figure">
-      <img src="/img/opt/${esc(galImgs('terasz')[0] || galImgs('galeria')[0] || '')}" alt="${esc(altKeszito('terasz'))}" title="Belvárosi terasz kialakítása" width="1000" height="1250" loading="lazy" decoding="async">
+      <img src="/img/opt/${esc(kep('vas-design-galeria-img-0748.webp', galImgs('terasz')[0]))}" alt="${esc(SITE.name)} — vas galéria beépítése munka közben" title="Munka közben" width="1000" height="1250" loading="lazy" decoding="async">
     </div>
     <div>
       <p class="eyebrow">Rólam</p>
@@ -335,7 +381,7 @@ function homePage() {
 <section class="tone tight">
   <div class="wrap section-head center" style="margin-bottom:0">
     <h2>Készen áll egy egyedi vas design elemre?</h2>
-    <p class="lede">Írjon, és egyeztessünk személyes találkozót a részletekért.</p>
+    <p class="lede">Írjon vagy hívjon — egy fotó és néhány méret már elég az első egyeztetéshez.</p>
     <div class="btn-row" style="justify-content:center">
       <a class="btn" href="tel:${esc(SITE.phoneHref)}">${esc(SITE.phone)}</a>
       <a class="btn ghost" href="/kapcsolat/">Kapcsolat</a>
@@ -344,15 +390,24 @@ function homePage() {
 </section>` + foot();
 }
 
+const GYIK = [
+  ['Mennyibe kerül egy egyedi vas elem?', 'Minden munka egyedi, ezért az ár a mérettől, a szerkezettől, az anyagoktól és a felületkezeléstől függ. A helyszíni felmérés után írásos árajánlatot adok.'],
+  ['Mennyi idő az elkészítés?', 'A gyártási időt az árajánlatban rögzítjük. Kültéri elemeknél a tűzihorganyzás külön üzemben történik, ez pár nappal megnövelheti az átfutást.'],
+  ['Kell-e engedély vagy statikus a galériához?', 'A galéria födémhez és falhoz rögzül, ezért a terhelhetőséget és a rögzítési pontokat már a tervezéskor átnézzük. Társasházban és nagyobb szerkezetnél érdemes statikus szakvéleményt kérni — ebben is segítek.'],
+  ['Milyen belmagasság kell egy állógalériához?', 'Kényelmes, kétszintes használathoz körülbelül 4 méter vagy annál magasabb belmagasság ideális.'],
+  ['Kültéren elég a porfestés?', 'Porfestés önmagában is véd, de egy sérülésnél a rozsda a festés alá kúszhat. Kerítéshez, kapuhoz, erkélykorláthoz a tűzihorganyzás + porfestés (duplex) rendszer a legtartósabb.'],
+  ['Vállal régi vasszerkezet felújítását?', 'Igen: tisztítás, rozsdamentesítés, javítás és újrafestés — vagy, ha megéri, új felületkezelés. A felméréskor megmondom, melyik a gazdaságosabb.'],
+];
+
 function servicesPage() {
   const blocks = C.services.map((s, i) => {
-    const g = gallery(s.img, { limit: 6 });
+    const g = s.img ? gallery(s.img, { limit: 6 }) : `<div class="card"><figure class="illu">${ILLU[s.illu] || ''}</figure><div class="card-body"><p>Kültéri munkáimról a galéria hamarosan bővül. Addig is: <a href="/feluletkezeles/">melyik felületkezelés mire való?</a></p></div></div>`;
     return `
 <section id="${esc(s.slug)}" class="${i % 2 ? 'tone' : ''}">
   <div class="wrap">
     <div class="about-grid">
       <div${i % 2 ? ' style="order:2"' : ''}>
-        <p class="eyebrow">0${i + 1}</p>
+        <p class="eyebrow">0${i + 1} · ${s.group === 'vas' ? 'Vasszerkezet' : 'Belsőépítészet'}</p>
         <h2>${esc(s.title)}</h2>
         <p class="lede">${esc(s.short)}</p>
         <p>${esc(s.body)}</p>
@@ -378,8 +433,8 @@ function servicesPage() {
 
   return head({
     title: `Szolgáltatások — Egyedi vas design elemek, térelválasztók, galériák | ${SITE.name}`,
-    desc: 'Vas-üveg ajtók, térelválasztók, loft galériák, mini wellness fürdőszobák, belvárosi teraszok és lakásátalakítás — tervezés és kivitelezés egy kézben Budapesten.',
-    kulcsszavak: 'vas-üveg ajtó, térelválasztó, loft galéria, mini wellness fürdőszoba, belvárosi terasz, lakásátalakítás, felújítás, design polc, lámpa, csillár, kovácsoltvas',
+    desc: 'Vas-üveg ajtók, térelválasztók, loft galériák, kerítések, korlátok, rácsok, előtetők, mini wellness fürdőszobák, belvárosi teraszok és lakásátalakítás — tervezés és kivitelezés egy kézben Budapesten.',
+    kulcsszavak: 'vas-üveg ajtó, térelválasztó, loft galéria, kerítés, kapu, korlát, ablakrács, előtető, mini wellness fürdőszoba, belvárosi terasz, lakásátalakítás, felújítás, design polc, lámpa, csillár, kovácsoltvas',
     current: '/szolgaltatasok/',
     jsonld: ld,
   }) + `
@@ -387,34 +442,35 @@ function servicesPage() {
   <div class="wrap section-head">
     <p class="eyebrow">Szolgáltatások</p>
     <h1>Amiben segíteni tudok</h1>
-    <p class="lede">A térelválasztótól a teljes lakásátalakításig — minden, ami vas, üveg és egyedi tervezés.</p>
+    <p class="lede">A térelválasztótól a kerítésig, a galériától a teljes lakásátalakításig — minden, ami vas, üveg és egyedi tervezés.</p>
   </div>
-</section>` + blocks + foot();
+</section>` + blocks + `
+<section class="tone" id="gyik">
+  <div class="wrap">
+    <div class="section-head"><p class="eyebrow">GYIK</p><h2>Gyakori kérdések</h2></div>
+    <div class="faq">${GYIK.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}</div>
+  </div>
+</section>` + foot();
 }
 
 function galleryPage() {
-  const cats = [
-    ['referencia-lakas', 'Belsőépítészet, lakásátalakítás'],
-    ['furdoszoba', 'Mini wellness fürdőszobák'],
-    ['galeria', 'Vas galériák'],
-    ['terasz', 'Belvárosi teraszok'],
-  ];
+  const cats = GAL_KAT;
   const secs = cats.map(([cat, label]) => {
-    const n = galImgs(cat).length;
+    const n = galKepek(cat).length;
     if (!n) return '';
     return `
 <section class="tight" data-gal-cat="${esc(cat)}">
   <div class="wrap">
     <div class="section-head">
       <h2>${esc(label)}</h2>
-      <p class="note" data-gal-count="${esc(cat)}">${n} munka</p>
+      <p class="note" data-gal-count="${esc(cat)}">${n} fotó</p>
     </div>
     ${gallery(cat)}
   </div>
 </section>`;
   }).join('\n');
 
-  const total = cats.reduce((n, [cat]) => n + galImgs(cat).length, 0);
+  const total = FOTO_DB;
 
   const ld = [{
     '@context': 'https://schema.org',
@@ -427,7 +483,7 @@ function galleryPage() {
 
   return head({
     title: `Galéria — Vasdesign referenciamunkák, portfólió | ${SITE.name}`,
-    desc: 'Vasdesign munkák: belsőépítészet, mini wellness fürdőszobák, vas galériák, belvárosi teraszok és design tárgyak — több száz kész referencia.',
+    desc: 'Vasdesign munkák: vas galériák és lépcsők, vas-üveg ajtók és térelválasztók, belsőépítészet, mini wellness fürdőszobák és belvárosi teraszok.',
     kulcsszavak: 'vasdesign galéria, referenciamunkák, portfólió, kovácsoltvas munkák, vas design fotók, wellness fürdőszoba galéria',
     current: '/galeria/',
     jsonld: ld,
@@ -436,7 +492,7 @@ function galleryPage() {
   <div class="wrap section-head">
     <p class="eyebrow">Portfólió</p>
     <h1>Galéria</h1>
-    <p class="lede">Több száz kész munka — keress a képekre, és kattintson a nagy nézethez.</p>
+    <p class="lede">Válogatás a kész munkákból — keressen a képek között, vagy kattintson a nagy nézethez.</p>
   </div>
 </section>
 <section class="tight">
@@ -449,7 +505,7 @@ function galleryPage() {
     </form>
     <div class="gal-allas" role="group" aria-label="Szűrés kategória szerint" id="gal-kategoriak">
       <button type="button" class="on" data-cat="osszes">Mind (${total})</button>
-      ${cats.map(([cat, label]) => `<button type="button" data-cat="${esc(cat)}">${esc(label)} (${galImgs(cat).length})</button>`).join('\n      ')}
+      ${cats.map(([cat, label]) => `<button type="button" data-cat="${esc(cat)}">${esc(label)} (${galKepek(cat).length})</button>`).join('\n      ')}
     </div>
     <p class="gal-hint" id="gal-hint" role="status" aria-live="polite"></p>
   </div>
@@ -479,13 +535,13 @@ function aboutPage() {
 <section class="hero">
   <div class="wrap about-grid">
     <div class="about-figure">
-      <img src="/img/opt/${esc(galImgs('referencia-lakas')[1] || galImgs('referencia-lakas')[0] || '')}" alt="${esc(altKeszito('referencia-lakas'))}" title="Vasdesign munka közben" width="1000" height="1250" fetchpriority="high" decoding="async">
+      <img src="/img/opt/${esc(kep('vas-design-galeria-img-4530.webp', galImgs('referencia-lakas')[1]))}" alt="${esc(SITE.name)} — elkészült vas galéria átadás előtt" title="Vasdesign munka közben" width="1000" height="1250" fetchpriority="high" decoding="async">
     </div>
     <div>
       <p class="eyebrow">Rólam</p>
       <h1>${esc(C.quote)}</h1>
       <p class="lede">${esc(C.about)}</p>
-      <p>A minimál és hightech építészet hatására divatba jöttek a kovácsoltvas és vas design elemek, vasból készült bútorok, ajtók, térelválasztók és lakáskiegészítők. Az üveg és fa elemek, antik tárgyak és művészeti alkotások egyensúlya a vassal emeli a tér eleganciáját és eklektikáját.</p>
+      <p>A minimál és hightech építészet hatására divatba jöttek a kovácsoltvas és vas design elemek, vasból készült bútorok, ajtók, térelválasztók és lakáskiegészítők. ${esc(SITE.yearSince)} óta tervezek és készítek ilyen elemeket — a galériától a kerítésig —, és mivel a tervezés és a kivitelezés egy kézben van, a részletek nem vesznek el útközben.</p>
       <div class="hero-stats">
         <div class="stat"><b>${esc(SITE.years)} év</b><span>tapasztalat</span></div>
         <div class="stat"><b>${esc(SITE.yearSince)}</b><span>óta a szakmában</span></div>
@@ -516,7 +572,7 @@ function contactPage() {
     mainEntity: {
       '@type': 'LocalBusiness',
       name: SITE.name,
-      telephone: '+' + SITE.phoneHref,
+      telephone: SITE.phoneHref,
       address: {
         '@type': 'PostalAddress',
         streetAddress: SITE.addressStreet,
@@ -524,12 +580,6 @@ function contactPage() {
         postalCode: SITE.addressZip,
         addressCountry: 'HU',
       },
-      openingHoursSpecification: [{
-        '@type': 'OpeningHoursSpecification',
-        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-        opens: '09:00',
-        closes: '18:00',
-      }],
     },
   }];
 
@@ -556,24 +606,37 @@ function contactPage() {
             <span><span class="k">E-mail</span>${emailTitkositott('v mail-link')}</span></li>
           <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
             <span><span class="k">Cím</span><span class="v">${esc(SITE.address)}</span></span></li>
-          <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-            <span><span class="k">Nyitvatartás</span><span class="v">${esc(SITE.openingHours)} (H–P)</span></span></li>
         </ul>
       </div>
       <div id="ajanlatkeres">
         <form class="ajanlat-form" novalidate>
           <div class="field"><label for="nev">Név</label><input id="nev" name="nev" type="text" required autocomplete="name"></div>
           <div class="field"><label for="email">E-mail cím</label><input id="email" name="email" type="email" required autocomplete="email"></div>
-          <div class="field"><label for="targy">Tárgy</label><input id="targy" name="targy" type="text"></div>
-          <div class="field"><label for="uzenet">Üzenet</label><textarea id="uzenet" name="uzenet" rows="5" required></textarea></div>
-          <button class="btn" type="submit">Üzenet küldése</button>
-          <p class="note">Az üzenet a saját levelezőprogramoddal nyílik meg. Telefonon is elérhetsz: <a href="tel:${esc(SITE.phoneHref)}">${esc(SITE.phone)}</a>.</p>
+          <div class="field-row">
+            <div class="field"><label for="tipus">Mire kér ajánlatot?</label><select id="tipus" name="tipus">
+              ${['Galéria, lépcső', 'Vas-üveg ajtó, térelválasztó', 'Kerítés, kapu', 'Korlát', 'Ablakrács, biztonsági rács', 'Előtető', 'Polc, bútor, egyéb vas elem', 'Fürdőszoba, terasz, lakásátalakítás', 'Régi vasszerkezet felújítása'].map((x) => `<option>${esc(x)}</option>`).join('')}
+            </select></div>
+            <div class="field"><label for="meret">Hozzávetőleges méret</label><input id="meret" name="meret" type="text" placeholder="pl. 12 fm kerítés, 1,1 m magas"></div>
+          </div>
+          <fieldset class="choice"><legend>Hová kerül?</legend>
+            <label><input type="radio" name="hely" value="Beltér" checked> Beltér</label>
+            <label><input type="radio" name="hely" value="Kültér"> Kültér</label>
+            <label><input type="radio" name="hely" value="Párás tér (fürdő)"> Párás tér</label>
+          </fieldset>
+          <div class="field"><label for="felulet">Felületkezelés</label><select id="felulet" name="felulet">
+            ${['Még nem tudom, kérek javaslatot', 'Porfestés', 'Tűzihorganyzás + porfestés (duplex)', 'Tűzihorganyzás', 'Nyers acél, viasz vagy lakk', 'Kovácsoltvas-hatású / vascsillám festés', 'Patinázott, antik hatás', 'Corten acél', 'Rozsdamentes acél'].map((x) => `<option>${esc(x)}</option>`).join('')}
+          </select><span class="note"><a href="/feluletkezeles/">Melyik mire való?</a></span></div>
+          <div class="field"><label for="uzenet">Üzenet</label><textarea id="uzenet" name="uzenet" rows="5" required placeholder="Stílus, szín, határidő, helyszín (kerület)…"></textarea></div>
+          <button class="btn" type="submit">Ajánlatkérés küldése</button>
+          <p class="note">Az üzenet az Ön levelezőprogramjában nyílik meg; fotót vagy vázlatot ott csatolhat hozzá. Telefonon is elérhető vagyok: <a href="tel:${esc(SITE.phoneHref)}">${esc(SITE.phone)}</a>.</p>
         </form>
       </div>
     </div>
   </div>
 </section>` + foot();
 }
+
+function feluletPage() { return feluletLap({ head, foot, esc, URL_ALAP, SITE }); }
 
 // ---------- mentés + SEO fájlok ----------
 async function write(rel, html) {
@@ -592,6 +655,7 @@ async function write(rel, html) {
 await write('index.html', homePage());
 await write('szolgaltatasok/index.html', servicesPage());
 await write('galeria/index.html', galleryPage());
+await write('feluletkezeles/index.html', feluletPage());
 await write('rolam/index.html', aboutPage());
 await write('kapcsolat/index.html', contactPage());
 
@@ -619,6 +683,7 @@ const lapok = [
   ['/', '1.0'],
   ['/szolgaltatasok/', '0.9'],
   ['/galeria/', '0.8'],
+  ['/feluletkezeles/', '0.8'],
   ['/rolam/', '0.6'],
   ['/kapcsolat/', '0.8'],
 ];
@@ -632,7 +697,7 @@ await writeFile(path.join(OUT, 'sitemap.xml'),
 // Jekyll tiltás a GitHub Pages-en (a .gitignore-ban lévő mappák miatt is jó)
 await writeFile(path.join(OUT, '.nojekyll'), '');
 
-console.log('✓ 6 oldal + sitemap.xml + robots.txt + 404.html generálva');
+console.log('✓ 7 oldal + sitemap.xml + robots.txt + 404.html generálva');
 console.log('  képek kategóriánként:', Object.entries(CAT).map(([k, v]) => `${k}=${v.length}`).join(', '));
 
 // ---------- duplikált képek ellenőrzése ----------
