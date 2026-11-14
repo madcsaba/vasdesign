@@ -209,12 +209,6 @@ function vallalasLd() {
       addressCountry: 'HU',
     },
     areaServed: { '@type': 'City', name: 'Budapest' },
-    openingHoursSpecification: [{
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-      opens: '09:00',
-      closes: '18:00',
-    }],
     sameAs: [],
     hasOfferCatalog: {
       '@type': 'OfferCatalog',
@@ -586,12 +580,6 @@ function contactPage() {
         postalCode: SITE.addressZip,
         addressCountry: 'HU',
       },
-      openingHoursSpecification: [{
-        '@type': 'OpeningHoursSpecification',
-        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-        opens: '09:00',
-        closes: '18:00',
-      }],
     },
   }];
 
@@ -618,8 +606,6 @@ function contactPage() {
             <span><span class="k">E-mail</span>${emailTitkositott('v mail-link')}</span></li>
           <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
             <span><span class="k">Cím</span><span class="v">${esc(SITE.address)}</span></span></li>
-          <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-            <span><span class="k">Nyitvatartás</span><span class="v">${esc(SITE.openingHoursText)}</span></span></li>
         </ul>
       </div>
       <div id="ajanlatkeres">
