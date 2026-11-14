@@ -182,8 +182,15 @@
       }
       var links = document.querySelectorAll('a.mail-link');
       var cim = links.length ? emailCim(links[0]) : '';
-      var targyMezo = targy || ('Ajánlatkérés — ' + nev);
-      var test = 'Név: ' + nev + '\nE-mail: ' + email + '\n\n' + uzenet;
+      var tipus = mezok('tipus'), meret = mezok('meret'), felulet = mezok('felulet');
+      var helyEl = form.querySelector('[name=hely]:checked');
+      var targyMezo = targy || ('Ajánlatkérés — ' + (tipus ? tipus + ' — ' : '') + nev);
+      var test = 'Név: ' + nev + '\nE-mail: ' + email +
+        (tipus ? '\nTípus: ' + tipus : '') +
+        (helyEl ? '\nHely: ' + helyEl.value : '') +
+        (meret ? '\nMéret: ' + meret : '') +
+        (felulet ? '\nFelületkezelés: ' + felulet : '') +
+        '\n\n' + uzenet;
       window.location.href = 'mailto:' + cim +
         '?subject=' + encodeURIComponent(targyMezo) +
         '&body=' + encodeURIComponent(test);
