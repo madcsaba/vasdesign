@@ -637,16 +637,19 @@ console.log('  képek kategóriánként:', Object.entries(CAT).map(([k, v]) => `
 
 // ---------- duplikált képek ellenőrzése ----------
 // A galéria ugyanaz a kép több WordPress-galériából is származhat; a
-// `dedup.mjs` a legrégebbi (eredeti) feltöltést tartja meg. Ez a lépés
-// megbuktatja a buildet, ha duplikátum maradna bent.
+// `dedup.mjs` (a `galeria-review.mjs` vizuális döntőjével) a kiválasztott
+// példányt tartja meg. Ez a lépés megbuktatja a buildet, ha duplikátum
+// maradna bent a megjelenő kategóriákban.
 {
   const { createHash } = await import('node:crypto');
   const { readFile } = await import('node:fs/promises');
   const { existsSync } = await import('node:fs');
+  // csak azok a kategóriák, amelyek megjelennek az oldalon
+  const GAL_KATEGORI = ['referencia-lakas', 'furdoszoba', 'galeria', 'terasz', 'ajtok'];
   const seen = new Map();
   const dupes = [];
-  for (const [cat, list] of Object.entries(CAT)) {
-    for (const x of list) {
+  for (const cat of GAL_KATEGORI) {
+    for (const x of CAT[cat] ?? []) {
       const p = path.join(PUB, 'img', 'opt', x.file);
       if (!existsSync(p)) { dupes.push(`${cat}:${x.file} (fájl nincs)`); continue; }
       const h = createHash('md5').update(await readFile(p)).digest('hex');
@@ -658,7 +661,7 @@ console.log('  képek kategóriánként:', Object.entries(CAT).map(([k, v]) => `
   if (dupes.length) {
     console.error('✗ duplikált kép van az adatcsomagban:');
     for (const d of dupes) console.error('   ' + d);
-    console.error('  Futtasd: node dedup.mjs');
+    console.error('  Döntsd el a galeria-review.mjs-sel, majd: node dedup.mjs');
     process.exit(1);
   }
   console.log('✓ ellenőrzés: nincs duplikált kép a galériában');
