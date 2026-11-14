@@ -639,14 +639,16 @@ console.log('  képek kategóriánként:', Object.entries(CAT).map(([k, v]) => `
 // A galéria ugyanaz a kép több WordPress-galériából is származhat; a
 // `dedup.mjs` (a `galeria-review.mjs` vizuális döntőjével) a kiválasztott
 // példányt tartja meg. Ez a lépés megbuktatja a buildet, ha duplikátum
-// maradna bent a megjelenő kategóriákban.
+// maradna bent a megjelenő kategóriákban – a méretváltozatokat is.
 {
   const { createHash } = await import('node:crypto');
   const { readFile } = await import('node:fs/promises');
   const { existsSync } = await import('node:fs');
+  const { fotokulcs } = await import('./galeria-kulcs.mjs');
   // csak azok a kategóriák, amelyek megjelennek az oldalon
   const GAL_KATEGORI = ['referencia-lakas', 'furdoszoba', 'galeria', 'terasz', 'ajtok'];
   const seen = new Map();
+  const fotok = new Map();
   const dupes = [];
   for (const cat of GAL_KATEGORI) {
     for (const x of CAT[cat] ?? []) {
@@ -655,9 +657,14 @@ console.log('  képek kategóriánként:', Object.entries(CAT).map(([k, v]) => `
       const h = createHash('md5').update(await readFile(p)).digest('hex');
       if (!seen.has(h)) seen.set(h, []);
       seen.get(h).push(`${cat}:${x.file}`);
+      // a méretváltozat: ugyanaz a fotó más fájlnévvel
+      const fk = fotokulcs(x.file);
+      if (!fotok.has(fk)) fotok.set(fk, []);
+      fotok.get(fk).push(`${cat}:${x.file}`);
     }
   }
   for (const [, list] of seen) if (list.length > 1) dupes.push(list.join(' == '));
+  for (const [fk, list] of fotok) if (list.length > 1) dupes.push(list.join(' == '));
   if (dupes.length) {
     console.error('✗ duplikált kép van az adatcsomagban:');
     for (const d of dupes) console.error('   ' + d);

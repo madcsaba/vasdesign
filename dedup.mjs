@@ -24,6 +24,7 @@ import { existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { fotokulcs, webpDim, pixelCount } from './galeria-kulcs.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const KAT = path.join(ROOT, 'data', 'by-category.json');
@@ -61,18 +62,49 @@ async function main() {
     catch (e) { console.error(`✗ a döntésfájl nem olvasható: ${e.message}`); process.exit(1); }
   }
 
-  // --- a képtartalom-hash alapján a duplikátum-csoportok ---
-  const hashMap = new Map(); // hash -> [{cat, file}]
+  // --- a duplikátum-csoportok ---
+  // Két fajta van:
+  //   1. azonos kép  – a képtartalom byte-ra egyezik (a WordPress ugyanazt a
+  //      fájlt töltötte fel több galériába);
+  //   2. méretváltozat – ugyanaz a fotó eltérő méretben (a WordPress
+  //      bélyegképei: `-727x1024`), ezért a fájlnévből levezetett fotókulcs
+  //      alapján csoportosítunk.
+  const hashMap = new Map();   // hash -> [{cat, file}]
+  const keyMap = new Map();    // fotókulcs -> [{cat, file}]
+  const dimMap = new Map();    // "cat|file" -> {w, h}
+  const hashOf = new Map();    // "cat|file" -> hash
   for (const [cat, list] of Object.entries(data)) {
     for (const x of list) {
       const p = path.join(OPT, x.file);
       if (!existsSync(p)) continue;
-      const h = md5(await readFile(p));
+      const buf = await readFile(p);
+      const h = md5(buf);
+      const dim = webpDim(buf);
+      const bejegyzes = { cat, file: x.file };
+      dimMap.set(kulcs(cat, x.file), dim);
+      hashOf.set(kulcs(cat, x.file), h);
       if (!hashMap.has(h)) hashMap.set(h, []);
-      hashMap.get(h).push({ cat, file: x.file });
+      hashMap.get(h).push(bejegyzes);
+      const fk = fotokulcs(x.file);
+      if (!keyMap.has(fk)) keyMap.set(fk, []);
+      keyMap.get(fk).push(bejegyzes);
     }
   }
-  const csoportok = [...hashMap.values()].filter((g) => g.length > 1);
+
+  const csoportok = [];
+  const azonosHash = new Set();
+  for (const [hash, g] of hashMap) {
+    if (g.length < 2) continue;
+    azonosHash.add(hash);
+    csoportok.push({ tipus: 'azonos', peldanyok: g });
+  }
+  for (const [fk, g] of keyMap) {
+    if (g.length < 2) continue;
+    // ha mindegyik már a hash-csoportban van (azonos kép), nem kell újra
+    if (g.every((e) => azonosHash.has(hashOf.get(kulcs(e.cat, e.file))))) continue;
+    csoportok.push({ tipus: 'meretvaltozat', peldanyok: g });
+  }
+
   if (!csoportok.length) {
     console.log('✓ nincs duplikált kép');
     return;
@@ -81,31 +113,47 @@ async function main() {
   const wpId = (f) => byFile.get(eredetiNev(f))?.id ?? Infinity;
   const torolando = new Map(); // "cat|file" -> maradó "cat|file"
 
-  console.log(`=== ${csoportok.length} duplikált csoport, ${csoportok.reduce((n, g) => n + g.length, 0)} fájl ===\n`);
+  console.log(`=== ${csoportok.length} duplikált csoport, ${csoportok.reduce((n, g) => n + g.peldanyok.length, 0)} fájl ===\n`);
 
   for (const g of csoportok) {
-    // alapértelmezés: a legrégebbi WordPress-feltöltés marad
-    const rendezett = [...g].sort((a, b) => wpId(a.file) - wpId(b.file));
+    // alapértelmezés: a legrégebbi WordPress-feltöltés marad; méretváltozatnál
+    // az eredeti (a méret-utótag nélküli) fájl – a bélyegképek mérete néha
+    // 1-2 px-rel nagyobb, így a puszta pixelmérleg félrevezető lenne.
+    const rendezett = [...g.peldanyok].sort((a, b) => {
+      if (g.tipus === 'meretvaltozat') {
+        const aBelyeg = /-\d+x\d+\.webp$/.test(a.file);
+        const bBelyeg = /-\d+x\d+\.webp$/.test(b.file);
+        if (aBelyeg !== bBelyeg) return aBelyeg ? 1 : -1; // az eredeti (bélyegkép nélkül) előrébb
+        const d = pixelCount(dimMap.get(kulcs(b.cat, b.file))) - pixelCount(dimMap.get(kulcs(a.cat, a.file)));
+        if (d) return d;
+      }
+      return wpId(a.file) - wpId(b.file);
+    });
     let marad = rendezett[0];
 
     // a vizuális döntés felülírhatja
-    const kivalasztott = g.filter((e) => dontes[kulcs(e.cat, e.file)] === true);
+    const kivalasztott = g.peldanyok.filter((e) => dontes[kulcs(e.cat, e.file)] === true);
     if (kivalasztott.length === 1) marad = kivalasztott[0];
     else if (kivalasztott.length > 1) {
-      console.error(`✗ a(z) ${g[0].file} csoportban több "megtartandó" van: ` +
+      console.error(`✗ a(z) ${g.peldanyok[0].file} csoportban több "megtartandó" van: ` +
         kivalasztott.map((e) => e.file).join(', '));
       process.exit(1);
     }
 
+    const tipus = g.tipus === 'meretvaltozat' ? 'méretváltozat' : 'azonos kép';
     const info = byFile.get(eredetiNev(marad.file));
     const forras = info?.src?.match(/uploads\/(\d{4}\/\d{2})/)?.[1] ?? '';
-    console.log(`MARAD: ${marad.file}  [${marad.cat}]  WP id=${info?.id ?? '?'}  ${forras}`);
-    for (const e of g) {
+    const dim = dimMap.get(kulcs(marad.cat, marad.file));
+    console.log(`[${tipus}] MARAD: ${marad.file}  [${marad.cat}]  ` +
+      `${dim ? dim.w + '×' + dim.h + ' px  ' : ''}WP id=${info?.id ?? '?'}  ${forras}`);
+    for (const e of g.peldanyok) {
       if (e === marad) continue;
       torolando.set(kulcs(e.cat, e.file), kulcs(marad.cat, marad.file));
       const ei = byFile.get(eredetiNev(e.file));
       const ef = ei?.src?.match(/uploads\/(\d{4}\/\d{2})/)?.[1] ?? '';
-      console.log(`  TÖRLÖS: ${e.file}  [${e.cat}]  WP id=${ei?.id ?? '?'}  ${ef}`);
+      const ed = dimMap.get(kulcs(e.cat, e.file));
+      console.log(`  TÖRLÖS: ${e.file}  [${e.cat}]  ` +
+        `${ed ? ed.w + '×' + ed.h + ' px  ' : ''}WP id=${ei?.id ?? '?'}  ${ef}`);
     }
     console.log('');
   }

@@ -23,6 +23,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { fotokulcs, webpDim, pixelCount } from './galeria-kulcs.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const KAT = path.join(ROOT, 'data', 'by-category.json');
@@ -39,39 +40,6 @@ const CATEGORIAK = {
   fooldal: 'Főoldal (jelenleg nincs használva)',
   lakasban: 'Lakásban (jelenleg nincs használva)',
 };
-
-/** A WebP fejlécéből olvassa ki a pixelméretet (méretezés nélkül). */
-function webpDim(buf) {
-  if (buf.length < 30 || buf.toString('ascii', 0, 4) !== 'RIFF' || buf.toString('ascii', 8, 12) !== 'WEBP') return null;
-  const fourcc = buf.toString('ascii', 12, 16);
-  if (fourcc === 'VP8X') return { w: (buf.readUIntLE(24, 3) & 0xffffff) + 1, h: (buf.readUIntLE(27, 3) & 0xffffff) + 1 };
-  if (fourcc === 'VP8 ') {
-    const i = buf.indexOf(Buffer.from([0x9d, 0x01, 0x2a]));
-    if (i < 0) return null;
-    return { w: buf.readUInt16LE(i + 3) & 0x3fff, h: buf.readUInt16LE(i + 5) & 0x3fff };
-  }
-  if (fourcc === 'VP8L') {
-    const i = buf.indexOf(Buffer.from([0x2f]));
-    if (i < 0) return null;
-    const b = buf.readUInt32LE(i + 1);
-    return { w: (b & 0x3fff) + 1, h: ((b >> 14) & 0x3fff) + 1 };
-  }
-  return null;
-}
-
-/**
- * A fotó "kulcsa": a WordPress által generált méret- és scaled-utótagok
- * nélkül. Így az ugyanaz a fotó minden méretváltozata egy csoportba kerül
- * (`vas-…-img-8432-1.webp` és `vas-…-img-8432-1-727x1024.webp`).
- */
-function fotokulcs(file) {
-  return file
-    .replace(/\.webp$/, '')
-    .replace(/-\d+x\d+$/, '')   // WordPress bélyegkép: -727x1024
-    .replace(/-scaled$/, '')     // WordPress nagyítvány: -scaled
-    .replace(/-(1|2)$/, '')     // WordPress „már van ilyen nevű”: -1, -2
-    .toLowerCase();
-}
 
 // --- adatok összeállítása ---
 const data = JSON.parse(await readFile(KAT, 'utf8'));
@@ -324,8 +292,14 @@ function render(){
   });
   t.querySelectorAll("[data-nagy]").forEach(b => b.addEventListener("click", () => {
     const ci = +b.dataset.nagy;
-    const p = [...CSOPORT[ci].peldanyok].sort((a, b2) =>
-      (b2.px ? b2.px.w * b2.px.h : 0) - (a.px ? a.px.w * a.px.h : 0))[0];
+    // az eredeti (a WordPress méret-utótagja nélkül) előrébb, mint a bélyegkép
+    const p = [...CSOPORT[ci].peldanyok].sort((a, b2) => {
+      const aB = /-\d+x\d+\.webp$/.test(a.file), bB = /-\d+x\d+\.webp$/.test(b2.file);
+      if (aB !== bB) return aB ? 1 : -1;
+      const d = ((b2.px ? b2.px.w * b2.px.h : 0) - (a.px ? a.px.w * a.px.h : 0));
+      if (d) return d;
+      return (a.wpId ?? 1e9) - (b2.wpId ?? 1e9);
+    })[0];
     CSOPORT[ci].peldanyok.forEach(x => dontes[kulcs(x)] = x === p ? true : false);
     render(); aktual();
   }));
