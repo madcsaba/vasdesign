@@ -27,7 +27,7 @@
     {
       "slug": "galeriak",
       "title": "Vasdesign galéria térnövelőként",
-      "short": "Ha 4 méteres vagy annál magasabb a lakás, egy ultramodern fémdesign állógaléria egyszerre háló, dolgozószoba és látványelem.",
+      "short": "Ha 4 méteres vagy annál magasabb a lakás, egy ultramodern design állógaléria egyszerre háló, dolgozószoba és látványelem.",
       "body": "A minimál stílusú, exkluzív érzést keltő vasgaléria klasszikus és modern lakásokban egyaránt emeli a tér fényét, tágasságát és eleganciáját. Attraktív, látványos, mégis könnyedén tisztán tartható — beleszervezhetünk egy hangulatos hálószobát vagy irodát. Egyedi elképzelését megvalósítom, kérjen árajánlatot. A galéria födémhez vagy falhoz rögzül, ezért a tervezésnél a terhelhetőséget és a rögzítési pontokat is végiggondoljuk — szükség esetén statikus szakember bevonásával.",
       "img": "galeria",
       "group": "vas"
@@ -36,10 +36,9 @@
       "slug": "kulteri-vasszerkezetek",
       "group": "vas",
       "title": "Kerítések, kapuk, korlátok, rácsok, előtetők",
-      "short": "Kültéri vasszerkezetek, amelyek évtizedekig bírják az időjárást — a felületkezeléstől függ, mennyi ideig maradnak szépek.",
+      "short": "Kültéri vasszerkezetek, amelyek évtizedekig bírják az időjárás viszontagságait.",
       "body": "Egyedi kerítéseket, kapukat, erkély- és lépcsőkorlátokat, ablakrácsokat és előtetőket tervezek és készítek, a romantikus kovácsoltvastól a letisztult, minimál vonalvezetésig. Kültéren a szerkezet tartósságát elsősorban a felületkezelés határozza meg: a megfelelő rendszert (például tűzihorganyzás és porfestés) az elem helyéhez és a kívánt megjelenéshez igazítva közösen választjuk ki.",
-      "img": "",
-      "illu": "fence"
+      "img": "kulter"
     },
     {
       "slug": "miniwellness",
@@ -53,7 +52,7 @@
       "slug": "belvarosi-teraszok",
       "title": "Belvárosi teraszok",
       "short": "Mediterrán mini teraszok, ahol a négy elem — víz, föld, levegő, tűz — harmonikus egyensúlya akár egy egészen kicsi téren is megteremthető.",
-      "body": "Alapjában véve én magam is urbánus lélek vagyok, de ahhoz, hogy ezt a belvárosban szabadon megélhessem, szükségem van arra, hogy erősen jelen legyen a négy elem. Ez az egyensúly akár egy egészen kicsi teraszon is előállítható: a leander alatt lapos kőtálban csillog a friss víz, ha pedig gyertyát gyújtunk, teljes lesz a harmónia.",
+      "body": "Alapjában véve én magam is természetközeli lélek vagyok, de ahhoz, hogy ezt a belvárosban szabadon megélhessem, szükségem van arra, hogy erősen jelen legyen a négy elem. Ez az egyensúly akár egy egészen kicsi teraszon is előállítható: a leander alatt lapos kőtálban csillog a friss víz, ha pedig gyertyát gyújtunk, teljes lesz a harmónia.",
       "img": "terasz",
       "group": "bel"
     },
@@ -61,7 +60,7 @@
       "slug": "lakasatalakitas",
       "title": "Lakásátalakítás, felújítás",
       "short": "Szép, elegáns, okos, tágas — teljes körű belsőépítészeti tervezés és generálkivitelezés a belváros szívében.",
-      "body": "A Broadway közelében, egy földszinti adottságait kihasználó luxus minivilla hangulatú kis apartman teljes körű generálkivitelezését végeztem: falak átmozgatása, villanyvezetékek, szigetelések, hightech nyílászárók, magas minőségű burkolatok, design világítások, wellness hangulatú relax fénymegoldások és innovatív fűtéstechnika. Az egész lakásban többféle fénymegoldást alakítottam ki — a fehér napfényhatástól az esti meleg, hangulatos fényekig.",
+      "body": "A budapesti Moulin Rouge közelében, egy földszinti adottságait kihasználó „luxus minivilla” hangulatú kis apartman teljes körű generálkivitelezését végeztem: falak átmozgatása, villanyvezetékek, szigetelések, hightech nyílászárók, magas minőségű burkolatok, design világítások, wellness hangulatú relax fénymegoldások és innovatív fűtéstechnika. Az egész lakásban többféle fénymegoldást alakítottam ki — a fehér napfényhatástól az esti meleg, hangulatos fényekig.",
       "img": "referencia-lakas",
       "group": "bel"
     }
@@ -90,14 +89,14 @@
       "d": "Korlátok, előtetők, kerítések, ablakrácsok, vas bejárati és beltéri ajtók, térelválasztók, galériák — a romantikustól a minimalistáig."
     },
     {
-      "t": "Tervezés és kivitelezés egy kézben",
-      "d": "Az ötlettől a beépítésig magam végigkísérem a projektet, így nincs elveszett információ a tervező és a kivitelező között."
+      "t": "Tervezéstől a kivitelezésig",
+      "d": "Az ötlettől a beépítésig magam kísérem végig a projektet, így nincs elveszett információ a tervező és a kivitelező között."
     },
     {
       "t": "Anyagok harmóniája",
       "d": "Az üveg, a fa, a kő és az antik tárgyak egyensúlya a vassal emeli a tér eleganciáját és eklektikáját."
     }
   ],
-  "quote": "Azt tűztem ki célul, hogy a belvárosi lakásokba becsempésszem a természetet és a wellness érzését.",
+  "quote": "Azt tűztem ki célul, hogy lakásokba tudatosan becsempésszem a természet és a wellness harmonikus érzését.",
   "about": "Mediterrán mini teraszokat, exkluzív relaxációs fürdőket és zuhanyozókat tervezek az urbánus miliőbe. Az üveg és fa elemek, antik tárgyak és művészeti alkotások egyensúlya a vassal emeli a tér eleganciáját."
 }

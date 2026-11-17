@@ -447,3 +447,8 @@ form { display: grid; gap: 16px; }
   .call-fab:hover { color: #fff; }
   .site-foot { padding-bottom: 88px; }
 }
+
+/* Rólam: diszkrét műhelykép */
+.aside-fig { margin: 28px 0 0; max-width: 300px; }
+.aside-fig img { border-radius: var(--r); width: 100%; aspect-ratio: 4/3; object-fit: cover; }
+.aside-fig figcaption { font-size: 13px; color: var(--ink-3); margin-top: 6px; }
