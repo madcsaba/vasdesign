@@ -53,6 +53,8 @@ const ALT_KULCS = {
   'galeria': 'egyedi vas loft galéria tervezés',
   'terasz': 'belvárosi terasz kialakítása',
   'ajtok': 'vas-üveg ajtó és térelválasztó',
+  'kulter': 'egyedi kovácsoltvas kerítés, kapu, korlát és előtető',
+  'muhely': 'kovácsolt vas rózsák a műhelyben',
   'lakasban': 'design tárgyak a lakásban',
   'lampa': 'design függőlámpa és csillár',
   'polc': 'egyedi design polc',
@@ -156,7 +158,7 @@ const foot = () => `
     <div class="foot-grid">
       <div class="foot-brand">
         <b>VASDESIGN</b>
-        <p>${esc(SITE.tagline)}. Tervezés és kivitelezés egy kézben, ${esc(SITE.yearSince)} óta.</p>
+        <p>Egyedi tervezésű vas- és kovácsoltvas elemek, valamint fürdők belsőépítészeti kialakítása.</p>
       </div>
       <div class="foot-col">
         <h4>Oldalak</h4>
@@ -180,7 +182,6 @@ const foot = () => `
     </div>
     <div class="foot-bottom">
       <span>© ${new Date().getFullYear()} ${esc(SITE.company)} — ${esc(SITE.name)}. Minden jog fenntartva.</span>
-      <span>${esc(SITE.hours)}</span>
     </div>
   </div>
 </footer>
@@ -249,6 +250,7 @@ function svcCard(s) {
 const GAL_KAT = [
   ['galeria', 'Vas galériák, lépcsők'],
   ['ajtok', 'Vas-üveg ajtók, térelválasztók'],
+  ['kulter', 'Kerítések, kapuk, korlátok, előtetők'],
   ['referencia-lakas', 'Belsőépítészet, lakásátalakítás'],
   ['furdoszoba', 'Mini wellness fürdőszobák'],
   ['terasz', 'Belvárosi teraszok'],
@@ -284,8 +286,8 @@ function homePage() {
   ];
 
   return head({
-    title: `${SITE.name} — Egyedi vas- és kovácsoltvas elemek, térelválasztók, galériák, wellness fürdőszobák`,
-    desc: 'Egyedi tervezésű vas- és kovácsoltvas elemek: vas-üveg ajtók, térelválasztók, loft galériák, kerítések, korlátok, rácsok, valamint mini wellness fürdőszobák és belvárosi teraszok Budapesten. Tervezés és kivitelezés egy kézben, 20+ év tapasztalattal.',
+    title: `${SITE.name} — Egyedi vas- és kovácsoltvas elemek, térelválasztók, galériák, kerítések és wellness fürdőszobák`,
+    desc: 'Egyedi tervezésű vas- és kovácsoltvas elemek: vas-üveg ajtók, térelválasztók, loft galériák, kerítések, korlátok, rácsok, valamint mini wellness fürdőszobák és belvárosi teraszok tervezése, kivitelezése és beépítése',
     kulcsszavak: 'vas design, kovácsoltvas, vas-üveg ajtó, térelválasztó, loft galéria, kerítés, kapu, korlát, ablakrács, előtető, porfestés, horganyzás, mini wellness fürdőszoba, belvárosi terasz, lakásátalakítás, belsőépítészet Budapest, egyedi fém design, Aura Home Design',
     current: '/',
     jsonld: ld,
@@ -293,9 +295,8 @@ function homePage() {
 <section class="hero hero-dark">
   <div class="wrap hero-grid">
     <div>
-      <p class="eyebrow">Tervezés és kivitelezés egy kézben, ${esc(SITE.yearSince)} óta</p>
       <h1>Vas, kovácsoltvas, üveg és fa — romantikustól a minimalistáig.</h1>
-      <p class="lede">Galériák, lépcsők, vas-üveg ajtók és térelválasztók a lakásba; kerítések, kapuk, korlátok, rácsok és előtetők kívülre. Mindez egyedi tervezéssel, a belváros szívéből — és ha kell, a teljes belsőépítészettel együtt.</p>
+      <p class="lede">Galériák, lépcsők, vas-üveg ajtók és térelválasztók a lakásba; kerítések, kapuk, korlátok, rácsok és előtetők. Mindez egyedi tervezéssel — és ha kell, a teljes belsőépítészettel együtt.</p>
       <div class="btn-row">
         <a class="btn" href="/kapcsolat/#ajanlatkeres">Ajánlatot kérek</a>
         <a class="btn ghost" href="/galeria/">Munkáim megtekintése</a>
@@ -330,7 +331,7 @@ function homePage() {
   <div class="wrap about-grid">
     <div>
       <p class="eyebrow">Felületkezelés</p>
-      <h2>A vas annyit ér, amennyit a felülete</h2>
+      <h2>A vas elemek felületkezeléséről</h2>
       <p class="lede">Beltérben a megjelenés, kültéren a tartósság a döntő. A porfestéstől a tűzihorganyzáson át a nyers, viaszolt acélig összegyűjtöttem, mikor melyiket érdemes választani.</p>
       <div class="btn-row"><a class="btn" href="/feluletkezeles/">Felületkezelési útmutató</a></div>
     </div>
@@ -402,7 +403,7 @@ const GYIK = [
 
 function servicesPage() {
   const blocks = C.services.map((s, i) => {
-    const g = s.img ? gallery(s.img, { limit: 6 }) : `<div class="card"><figure class="illu">${ILLU[s.illu] || ''}</figure><div class="card-body"><p>Kültéri munkáimról a galéria hamarosan bővül. Addig is: <a href="/feluletkezeles/">melyik felületkezelés mire való?</a></p></div></div>`;
+    const g = gallery(s.img, { limit: 6 });
     return `
 <section id="${esc(s.slug)}" class="${i % 2 ? 'tone' : ''}">
   <div class="wrap">
@@ -411,7 +412,7 @@ function servicesPage() {
         <p class="eyebrow">0${i + 1} · ${s.group === 'vas' ? 'Vasszerkezet' : 'Belsőépítészet'}</p>
         <h2>${esc(s.title)}</h2>
         <p class="lede">${esc(s.short)}</p>
-        <p>${esc(s.body)}</p>
+        <p>${esc(s.body)}</p>${s.group === 'vas' && s.img === 'kulter' ? '\n        <p><a href="/feluletkezeles/">Melyik felületkezelés mire való?</a></p>' : ''}
         <div class="btn-row"><a class="btn ghost" href="/kapcsolat/#ajanlatkeres">Árajánlatot kérek</a></div>
       </div>
       <div${i % 2 ? ' style="order:1"' : ''}>${g || ''}</div>
@@ -433,7 +434,7 @@ function servicesPage() {
   ];
 
   return head({
-    title: `Szolgáltatások — Egyedi vas design elemek, térelválasztók, galériák | ${SITE.name}`,
+    title: `Szolgáltatások — Egyedi vas design elemek, térelválasztók, galériák, hangulatos fürdők | ${SITE.name}`,
     desc: 'Vas-üveg ajtók, térelválasztók, loft galériák, kerítések, korlátok, rácsok, előtetők, mini wellness fürdőszobák, belvárosi teraszok és lakásátalakítás — tervezés és kivitelezés egy kézben Budapesten.',
     kulcsszavak: 'vas-üveg ajtó, térelválasztó, loft galéria, kerítés, kapu, korlát, ablakrács, előtető, mini wellness fürdőszoba, belvárosi terasz, lakásátalakítás, felújítás, design polc, lámpa, csillár, kovácsoltvas',
     current: '/szolgaltatasok/',
@@ -442,7 +443,7 @@ function servicesPage() {
 <section class="hero tight">
   <div class="wrap section-head">
     <p class="eyebrow">Szolgáltatások</p>
-    <h1>Amiben segíteni tudok</h1>
+    <h1>Profilunk</h1>
     <p class="lede">A térelválasztótól a kerítésig, a galériától a teljes lakásátalakításig — minden, ami vas, üveg és egyedi tervezés.</p>
   </div>
 </section>` + blocks + `
@@ -536,13 +537,17 @@ function aboutPage() {
 <section class="hero">
   <div class="wrap about-grid">
     <div class="about-figure">
-      <img src="/img/opt/${esc(kep('vas-design-galeria-img-4530.webp', galImgs('referencia-lakas')[1]))}" alt="${esc(SITE.name)} — elkészült vas galéria átadás előtt" title="Vasdesign munka közben" width="1000" height="1250" fetchpriority="high" decoding="async">
+      <img src="/img/opt/${esc(kep('vas-design-galeria-img-0748.webp', galImgs('galeria')[0]))}" alt="${esc(SITE.name)} — vas galéria beépítése munka közben" title="Vasdesign munka közben" width="1000" height="1250" fetchpriority="high" decoding="async">
     </div>
     <div>
       <p class="eyebrow">Rólam</p>
       <h1>${esc(C.quote)}</h1>
       <p class="lede">${esc(C.about)}</p>
       <p>A minimál és hightech építészet hatására divatba jöttek a kovácsoltvas és vas design elemek, vasból készült bútorok, ajtók, térelválasztók és lakáskiegészítők. ${esc(SITE.yearSince)} óta tervezek és készítek ilyen elemeket — a galériától a kerítésig —, és mivel a tervezés és a kivitelezés egy kézben van, a részletek nem vesznek el útközben.</p>
+      <figure class="aside-fig">
+        <img src="/img/opt/${esc(kep('kovacsolt-rozsak-muhely.webp'))}" alt="Kovácsolt vas rózsák a műhelyben, festés előtt" width="1600" height="1200" loading="lazy" decoding="async">
+        <figcaption>Kovácsolt rózsák a műhelyből</figcaption>
+      </figure>
       <div class="hero-stats">
         <div class="stat"><b>${esc(SITE.years)} év</b><span>tapasztalat</span></div>
         <div class="stat"><b>${esc(SITE.yearSince)}</b><span>óta a szakmában</span></div>
@@ -712,7 +717,7 @@ console.log('  képek kategóriánként:', Object.entries(CAT).map(([k, v]) => `
   const { existsSync } = await import('node:fs');
   const { fotokulcs } = await import('./galeria-kulcs.mjs');
   // csak azok a kategóriák, amelyek megjelennek az oldalon
-  const GAL_KATEGORI = ['referencia-lakas', 'furdoszoba', 'galeria', 'terasz', 'ajtok'];
+  const GAL_KATEGORI = ['referencia-lakas', 'furdoszoba', 'galeria', 'terasz', 'ajtok', 'kulter', 'muhely'];
   const seen = new Map();
   const fotok = new Map();
   const dupes = [];
