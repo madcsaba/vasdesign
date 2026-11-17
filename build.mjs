@@ -6,6 +6,7 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { feluletLap } from './feluletkezeles.mjs';
+import { TERMEKEK, termekLap, faqLd } from './termekoldalak.mjs';
 
 const ROOT = new URL('.', import.meta.url).pathname;
 const PUB = path.join(ROOT, 'public');
@@ -63,6 +64,20 @@ const ALT_KULCS = {
   'targyak': 'design tárgy',
   'rendezes': 'rendelés menete',
 };
+// Képenkénti, egyedi alt-szövegek (data/alt.json) és valós méretek
+const ALT = existsSync(path.join(ROOT, 'data/alt.json')) ? JSON.parse(await readFile(path.join(ROOT, 'data/alt.json'), 'utf8')) : {};
+const KEPINFO = Object.fromEntries(Object.values(CAT).flat().map((x) => [x.file, x]));
+const kiskep = (f) => existsSync(path.join(PUB, 'img/opt/thumb', f));
+// <img> attribútumok: valós méret, és ha van kiskép, srcset a gyorsabb betöltéshez
+function kepAttr(f, alt, sizes = '(max-width: 720px) 100vw, 33vw') {
+  const k = KEPINFO[f] || {};
+  const w = k.w || 1200, h = k.h || 800;
+  const src = kiskep(f)
+    ? `src="/img/opt/thumb/${esc(f)}" srcset="/img/opt/thumb/${esc(f)} ${Math.min(640, Math.max(w, h) === w ? 640 : Math.round(640 * w / h))}w, /img/opt/${esc(f)} ${w}w" sizes="${sizes}"`
+    : `src="/img/opt/${esc(f)}"`;
+  return `${src} alt="${esc(alt)}" width="${w}" height="${h}"`;
+}
+const altFor = (f, cat) => ALT[f] || altKeszito(cat);
 const altKeszito = (cat) => `${SITE.name} referenciamunka — ${ALT_KULCS[cat] || cat.replace(/-/g, ' ')}`;
 
 /**
@@ -71,13 +86,20 @@ const altKeszito = (cat) => `${SITE.name} referenciamunka — ${ALT_KULCS[cat] |
  * szűr a kereső a böngészőben, új hálózati kérés nélkül.
  */
 function galleryCell(cat, f, i, { lazy = true } = {}) {
-  const alt = altKeszito(cat);
+  const alt = altFor(f, cat);
   const cls = i % 5 === 0 ? 'g-wide' : (i % 2 === 0 ? 'g-sq' : 'g-tall');
-  const keres = [f.replace(/\.webp$/, '').replace(/[-_]/g, ' '), ALT_KULCS[cat] || cat.replace(/-/g, ' ')].join(' | ');
+  const keres = [f.replace(/\.webp$/, '').replace(/[-_]/g, ' '), ALT_KULCS[cat] || cat.replace(/-/g, ' '), alt].join(' | ');
   return `<a class="${cls}" href="/img/opt/${esc(f)}" data-lightbox="g-${esc(cat)}" data-keres="${esc(keres)}">` +
-    `<img src="/img/opt/${esc(f)}" alt="${esc(alt)} ${i + 1}. kép" title="${esc(alt)}"` +
-    ` width="1200" height="800" ${lazy ? 'loading="lazy" decoding="async"' : ''}>` +
+    `<img ${kepAttr(f, alt, i % 5 === 0 ? '(max-width: 720px) 100vw, 66vw' : '(max-width: 720px) 100vw, 33vw')}` +
+    ` ${lazy ? 'loading="lazy" decoding="async"' : ''}>` +
     `</a>`;
+}
+
+// Tetszőleges fájllista galériaként (termékoldalak)
+function galleryFiles(files) {
+  const catOf = (f) => Object.keys(CAT).find((k) => CAT[k].some((x) => x.file === f)) || 'fooldal';
+  const cells = files.filter((f) => KEPINFO[f]).map((f, i) => galleryCell(catOf(f), f, i)).join('\n');
+  return cells ? `<div class="gallery">${cells}</div>` : '';
 }
 
 function gallery(cat, { limit = 0, lazy = true } = {}) {
@@ -115,7 +137,6 @@ function head({ title, desc, current, kulcsszavak, jsonld = [] }) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
-<meta name="keywords" content="${esc(kulcsszavak || '')}">
 <meta name="author" content="${esc(SITE.company)}">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="${esc(kanonikus)}">
@@ -168,6 +189,12 @@ const foot = () => `
           <li><a href="/feluletkezeles/">Felületkezelés</a></li>
           <li><a href="/rolam/">Rólam</a></li>
           <li><a href="/kapcsolat/">Kapcsolat</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h4>Termékek</h4>
+        <ul>
+          ${TERMEKEK.map((t) => `<li><a href="/${t.slug}/">${esc(t.nav)}</a></li>`).join('\n          ')}
         </ul>
       </div>
       <div class="foot-col">
@@ -232,13 +259,19 @@ const ILLU = {
     ${Array.from({ length: 11 }, (_, i) => { const x = 20 + i * 20; return `<path d="M${x} 124V34"/><path d="M${x - 5} 34l5-12 5 12"/>`; }).join('')}
     <circle cx="60" cy="72" r="10"/><circle cx="120" cy="72" r="10"/><circle cx="180" cy="72" r="10"/></svg>`,
 };
+// szolgáltatás → termékoldal(ak)
+const TERMEK_LINK = {
+  'terelvalasztok-ajtok': ['vas-uveg-ajto'],
+  'galeriak': ['loft-galeria'],
+  'kulteri-vasszerkezetek': ['kovacsoltvas-kerites', 'korlat'],
+};
 function svcCard(s) {
   const f = galImgs(s.img)[0];
   const fig = f
-    ? `<figure><img src="/img/opt/${esc(f)}" alt="${esc(altKeszito(s.img))}" title="${esc(s.title)}" width="1200" height="800" loading="lazy" decoding="async"></figure>`
+    ? `<figure><img ${kepAttr(f, altFor(f, s.img))} loading="lazy" decoding="async"></figure>`
     : `<figure class="illu">${ILLU[s.illu] || ''}</figure>`;
   return `
-    <a class="card" href="/szolgaltatasok/#${esc(s.slug)}">
+    <a class="card" href="${TERMEK_LINK[s.slug] ? '/' + TERMEK_LINK[s.slug][0] + '/' : '/szolgaltatasok/#' + esc(s.slug)}">
       ${fig}
       <div class="card-body">
         <h3>${esc(s.title)}</h3>
@@ -286,8 +319,8 @@ function homePage() {
   ];
 
   return head({
-    title: `${SITE.name} — Egyedi vas- és kovácsoltvas elemek, térelválasztók, galériák, kerítések és wellness fürdőszobák`,
-    desc: 'Egyedi tervezésű vas- és kovácsoltvas elemek: vas-üveg ajtók, térelválasztók, loft galériák, kerítések, korlátok, rácsok, valamint mini wellness fürdőszobák és belvárosi teraszok tervezése, kivitelezése és beépítése',
+    title: `Kovácsoltvas kerítés, korlát, loft galéria | ${SITE.name}`,
+    desc: 'Egyedi vas- és kovácsoltvas elemek tervezése, gyártása, beépítése: kerítés, kapu, korlát, loft galéria, vas-üveg ajtó, valamint wellness fürdők. Budapest.',
     kulcsszavak: 'vas design, kovácsoltvas, vas-üveg ajtó, térelválasztó, loft galéria, kerítés, kapu, korlát, ablakrács, előtető, porfestés, horganyzás, mini wellness fürdőszoba, belvárosi terasz, lakásátalakítás, belsőépítészet Budapest, egyedi fém design, Aura Home Design',
     current: '/',
     jsonld: ld,
@@ -413,7 +446,7 @@ function servicesPage() {
         <h2>${esc(s.title)}</h2>
         <p class="lede">${esc(s.short)}</p>
         <p>${esc(s.body)}</p>${s.group === 'vas' && s.img === 'kulter' ? '\n        <p><a href="/feluletkezeles/">Melyik felületkezelés mire való?</a></p>' : ''}
-        <div class="btn-row"><a class="btn ghost" href="/kapcsolat/#ajanlatkeres">Árajánlatot kérek</a></div>
+        <div class="btn-row">${(TERMEK_LINK[s.slug] || []).map((sl) => `<a class="btn" href="/${sl}/">${esc(TERMEKEK.find((t) => t.slug === sl).nav)}</a>`).join('')}<a class="btn ghost" href="/kapcsolat/#ajanlatkeres">Árajánlatot kérek</a></div>
       </div>
       <div${i % 2 ? ' style="order:1"' : ''}>${g || ''}</div>
     </div>
@@ -434,11 +467,11 @@ function servicesPage() {
   ];
 
   return head({
-    title: `Szolgáltatások — Egyedi vas design elemek, térelválasztók, galériák, hangulatos fürdők | ${SITE.name}`,
-    desc: 'Vas-üveg ajtók, térelválasztók, loft galériák, kerítések, korlátok, rácsok, előtetők, mini wellness fürdőszobák, belvárosi teraszok és lakásátalakítás — tervezés és kivitelezés egy kézben Budapesten.',
+    title: `Szolgáltatások: vas, galéria, kerítés, fürdő | ${SITE.name}`,
+    desc: 'Vas-üveg ajtók, loft galériák, kerítések, korlátok, előtetők, valamint wellness fürdők, teraszok és lakásfelújítás egyedi tervezéssel, Budapesten.',
     kulcsszavak: 'vas-üveg ajtó, térelválasztó, loft galéria, kerítés, kapu, korlát, ablakrács, előtető, mini wellness fürdőszoba, belvárosi terasz, lakásátalakítás, felújítás, design polc, lámpa, csillár, kovácsoltvas',
     current: '/szolgaltatasok/',
-    jsonld: ld,
+    jsonld: [...ld, faqLd(GYIK)],
   }) + `
 <section class="hero tight">
   <div class="wrap section-head">
@@ -484,8 +517,8 @@ function galleryPage() {
   }];
 
   return head({
-    title: `Galéria — Vasdesign referenciamunkák, portfólió | ${SITE.name}`,
-    desc: 'Vasdesign munkák: vas galériák és lépcsők, vas-üveg ajtók és térelválasztók, belsőépítészet, mini wellness fürdőszobák és belvárosi teraszok.',
+    title: `Galéria: kovácsoltvas és vas design munkák | ${SITE.name}`,
+    desc: 'Referenciák: kovácsoltvas kerítések, kapuk, korlátok, loft galériák, vas-üveg ajtók, wellness fürdők és belvárosi teraszok fotókon.',
     kulcsszavak: 'vasdesign galéria, referenciamunkák, portfólió, kovácsoltvas munkák, vas design fotók, wellness fürdőszoba galéria',
     current: '/galeria/',
     jsonld: ld,
@@ -528,7 +561,7 @@ function aboutPage() {
   ];
 
   return head({
-    title: `Rólam — Több mint 20 év tapasztalat vas designban | ${SITE.name}`,
+    title: `Rólam: 20+ év vas design tapasztalat | ${SITE.name}`,
     desc: 'Több mint 20 év tapasztalat egyedi vas- és kovácsoltvas elemek, valamint belsőépítészet tervezésében és kivitelezésében Budapesten.',
     kulcsszavak: 'vas design készítő, kovácsoltvas szakember, belsőépítész Budapest, több mint 20 év tapasztalat, egyedi fém tervezés',
     current: '/rolam/',
@@ -590,8 +623,8 @@ function contactPage() {
   }];
 
   return head({
-    title: `Kapcsolat, ajánlatkérés — ${SITE.name}, ${SITE.company}`,
-    desc: `${SITE.name} elérhetőségei: ${SITE.phone}, ${SITE.address}. Kérjen ajánlatot egyedi vas design elemre, térelválasztóra vagy wellness fürdőszobára.`,
+    title: `Kapcsolat, ajánlatkérés | ${SITE.name}`,
+    desc: `Kérjen ajánlatot kerítésre, korlátra, loft galériára vagy vas-üveg ajtóra. Telefon: ${SITE.phone}, ${SITE.address}.`,
     kulcsszavak: 'ajánlatkérés, kapcsolat, vas design rendelés, kovácsoltvas megrendelés, Budapest belváros',
     current: '/kapcsolat/',
     jsonld: ld,
@@ -651,7 +684,8 @@ async function write(rel, html) {
   if (BASE) {
     html = html
       .replace(/href="\//g, `href="${BASE}/`)
-      .replace(/src="\//g, `src="${BASE}/`);
+      .replace(/src="\//g, `src="${BASE}/`)
+      .replace(/srcset="([^"]*)"/g, (m, v) => `srcset="${v.replace(/(^|, )\//g, `$1${BASE}/`)}"`);
   }
   const p = path.join(OUT, rel);
   await mkdir(path.dirname(p), { recursive: true });
@@ -662,6 +696,7 @@ await write('index.html', homePage());
 await write('szolgaltatasok/index.html', servicesPage());
 await write('galeria/index.html', galleryPage());
 await write('feluletkezeles/index.html', feluletPage());
+for (const t of TERMEKEK) await write(t.slug + '/index.html', termekLap(t, { head, foot, esc, URL_ALAP, SITE, galleryFiles, galKepek }));
 await write('rolam/index.html', aboutPage());
 await write('kapcsolat/index.html', contactPage());
 
@@ -690,6 +725,7 @@ const lapok = [
   ['/szolgaltatasok/', '0.9'],
   ['/galeria/', '0.8'],
   ['/feluletkezeles/', '0.8'],
+  ...TERMEKEK.map((t) => ['/' + t.slug + '/', '0.9']),
   ['/rolam/', '0.6'],
   ['/kapcsolat/', '0.8'],
 ];
@@ -703,7 +739,7 @@ await writeFile(path.join(OUT, 'sitemap.xml'),
 // Jekyll tiltás a GitHub Pages-en (a .gitignore-ban lévő mappák miatt is jó)
 await writeFile(path.join(OUT, '.nojekyll'), '');
 
-console.log('✓ 7 oldal + sitemap.xml + robots.txt + 404.html generálva');
+console.log(`✓ ${7 + TERMEKEK.length} oldal + sitemap.xml + robots.txt + 404.html generálva`);
 console.log('  képek kategóriánként:', Object.entries(CAT).map(([k, v]) => `${k}=${v.length}`).join(', '));
 
 // ---------- duplikált képek ellenőrzése ----------
