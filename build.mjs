@@ -42,10 +42,16 @@ const kep = (f, ...tartalek) => [f, ...tartalek].find((x) => x && vanKep(x)) || 
 const emailTitkositott = (osztaly = 'mail-link') => {
   const [user, domain] = SITE.email.split('@');
   const r = (s) => [...s].reverse().join('');
-  const lathato = `${user} kukac ${domain.replace(/\./g, ' pont ')}`;
   return `<a class="${osztaly}" href="#" data-u="${esc(r(user))}" data-d="${esc(r(domain))}" ` +
-    `rel="nofollow">${esc(lathato)}</a>`;
+    `rel="nofollow">E-mail cím megjelenítése</a>`;
 };
+
+// Telefonszám elrejtése a robotok elől: a HTML-ben nincs számjegysor, a számjegyek
+// betűkké kódolva (0→a … 9→j) szerepelnek, a site.js rakja össze és teszi hívhatóvá.
+const kodol = (s) => String(s).replace(/[0-9]/g, (d) => String.fromCharCode(97 + Number(d)));
+const telefon = (osztaly = '', felirat = '') =>
+  `<a class="tel-link ${osztaly}" href="#" rel="nofollow" data-t="${esc(kodol(SITE.phoneHref))}"` +
+  (felirat ? '' : ` data-f="${esc(kodol(SITE.phone))}"`) + `>${felirat || 'Telefonszám megjelenítése'}</a>`;
 
 // Kategóriánkénti, kulcsszavas alt-szöveg (SEO + akadálymentesség)
 const ALT_KULCS = {
@@ -200,7 +206,7 @@ const foot = () => `
       <div class="foot-col">
         <h4>Elérhetőség</h4>
         <ul>
-          <li><a href="tel:${esc(SITE.phoneHref)}">${esc(SITE.phone)}</a></li>
+          <li>${telefon()}</li>
           <li>${emailTitkositott()}</li>
           <li>${esc(SITE.address)}</li>
           <li>${esc(SITE.company)}</li>
@@ -212,7 +218,7 @@ const foot = () => `
     </div>
   </div>
 </footer>
-<a class="call-fab" href="tel:${esc(SITE.phoneHref)}" aria-label="Hívás: ${esc(SITE.phone)}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.5 2.1L8.1 9.6a16 16 0 0 0 6 6l1.1-1.1a2 2 0 0 1 2.1-.5c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.7 2Z"/></svg>Hívás</a>
+<a class="call-fab tel-link" href="#" rel="nofollow" data-t="${esc(kodol(SITE.phoneHref))}" aria-label="Hívás"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.5 2.1L8.1 9.6a16 16 0 0 0 6 6l1.1-1.1a2 2 0 0 1 2.1-.5c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.7 2Z"/></svg>Hívás</a>
 <script src="/assets/site.js" defer></script>
 <script data-goatcounter="https://kiazami.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
@@ -227,7 +233,6 @@ function vallalasLd() {
     legalName: SITE.company,
     description: SITE.tagline,
     url: URL_ALAP + '/',
-    telephone: SITE.phoneHref,
     image: URL_ALAP + (galImgs('referencia-lakas')[0] ? '/img/opt/' + galImgs('referencia-lakas')[0] : ''),
     priceRange: 'Egyedi árajánlat alapján',
     address: {
@@ -334,11 +339,6 @@ function homePage() {
         <a class="btn" href="/kapcsolat/#ajanlatkeres">Ajánlatot kérek</a>
         <a class="btn ghost" href="/galeria/">Munkáim megtekintése</a>
       </div>
-      <div class="hero-stats">
-        <div class="stat"><b>${esc(SITE.years)} év</b><span>szakmai tapasztalat</span></div>
-        <div class="stat"><b>${FOTO_DB}</b><span>referenciafotó a galériában</span></div>
-        <div class="stat"><b>1 kéz</b><span>tervezéstől a beépítésig</span></div>
-      </div>
     </div>
     <div class="hero-figure">
       <img src="/img/opt/${esc(kep('loft-galeria-img-5282.webp', galImgs('galeria')[0]))}" alt="${esc(SITE.name)} referenciamunka — egyedi vas lépcső és loft galéria" title="${esc(SITE.name)} — vas lépcső és galéria" width="1919" height="2560" fetchpriority="high" decoding="async">
@@ -390,7 +390,7 @@ function homePage() {
 <section class="tone">
   <div class="wrap about-grid">
     <div class="about-figure">
-      <img src="/img/opt/${esc(kep('vas-design-galeria-img-0748.webp', galImgs('terasz')[0]))}" alt="${esc(SITE.name)} — vas galéria beépítése munka közben" title="Munka közben" width="1000" height="1250" loading="lazy" decoding="async">
+      <img src="/img/opt/${esc(kep('loft-galeria-img-2336-2.webp', galImgs('galeria')[0]))}" alt="Loft galéria fa padlóval és acélpálcás korláttal" title="Loft galéria" width="1000" height="1250" loading="lazy" decoding="async">
     </div>
     <div>
       <p class="eyebrow">Rólam</p>
@@ -418,7 +418,7 @@ function homePage() {
     <h2>Készen áll egy egyedi vas design elemre?</h2>
     <p class="lede">Írjon vagy hívjon — egy fotó és néhány méret már elég az első egyeztetéshez.</p>
     <div class="btn-row" style="justify-content:center">
-      <a class="btn" href="tel:${esc(SITE.phoneHref)}">${esc(SITE.phone)}</a>
+      ${telefon('btn', 'Hívás')}
       <a class="btn ghost" href="/kapcsolat/">Kapcsolat</a>
     </div>
   </div>
@@ -570,7 +570,7 @@ function aboutPage() {
 <section class="hero">
   <div class="wrap about-grid">
     <div class="about-figure">
-      <img src="/img/opt/${esc(kep('vas-design-galeria-img-0748.webp', galImgs('galeria')[0]))}" alt="${esc(SITE.name)} — vas galéria beépítése munka közben" title="Vasdesign munka közben" width="1000" height="1250" fetchpriority="high" decoding="async">
+      <img src="/img/opt/${esc(kep('kulter-korlatelem-muhely.webp', galImgs('galeria')[0]))}" alt="Kovácsoltvas korlátelem a műhelyben, beépítés előtt" title="A műhelyből" width="1000" height="1250" fetchpriority="high" decoding="async">
     </div>
     <div>
       <p class="eyebrow">Rólam</p>
@@ -611,8 +611,7 @@ function contactPage() {
     mainEntity: {
       '@type': 'LocalBusiness',
       name: SITE.name,
-      telephone: SITE.phoneHref,
-      address: {
+        address: {
         '@type': 'PostalAddress',
         streetAddress: SITE.addressStreet,
         addressLocality: SITE.addressCity,
@@ -624,7 +623,7 @@ function contactPage() {
 
   return head({
     title: `Kapcsolat, ajánlatkérés | ${SITE.name}`,
-    desc: `Kérjen ajánlatot kerítésre, korlátra, loft galériára vagy vas-üveg ajtóra. Telefon: ${SITE.phone}, ${SITE.address}.`,
+    desc: `Kérjen ajánlatot kerítésre, korlátra, loft galériára vagy vas-üveg ajtóra. Személyes egyeztetés: ${SITE.address}.`,
     kulcsszavak: 'ajánlatkérés, kapcsolat, vas design rendelés, kovácsoltvas megrendelés, Budapest belváros',
     current: '/kapcsolat/',
     jsonld: ld,
@@ -640,7 +639,7 @@ function contactPage() {
       <div>
         <ul class="contact-list">
           <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.5 2.1L8.1 9.6a16 16 0 0 0 6 6l1.1-1.1a2 2 0 0 1 2.1-.5c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.7 2Z"/></svg>
-            <span><span class="k">Telefon</span><a class="v" href="tel:${esc(SITE.phoneHref)}">${esc(SITE.phone)}</a></span></li>
+            <span><span class="k">Telefon</span>${telefon('v')}</span></li>
           <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg>
             <span><span class="k">E-mail</span>${emailTitkositott('v mail-link')}</span></li>
           <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -667,7 +666,7 @@ function contactPage() {
           </select><span class="note"><a href="/feluletkezeles/">Melyik mire való?</a></span></div>
           <div class="field"><label for="uzenet">Üzenet</label><textarea id="uzenet" name="uzenet" rows="5" required placeholder="Stílus, szín, határidő, helyszín (kerület)…"></textarea></div>
           <button class="btn" type="submit">Ajánlatkérés küldése</button>
-          <p class="note">Az üzenet az Ön levelezőprogramjában nyílik meg; fotót vagy vázlatot ott csatolhat hozzá. Telefonon is elérhető vagyok: <a href="tel:${esc(SITE.phoneHref)}">${esc(SITE.phone)}</a>.</p>
+          <p class="note">Az üzenet az Ön levelezőprogramjában nyílik meg; fotót vagy vázlatot ott csatolhat hozzá. Telefonon is elérhető vagyok: ${telefon()}.</p>
         </form>
       </div>
     </div>
@@ -696,7 +695,7 @@ await write('index.html', homePage());
 await write('szolgaltatasok/index.html', servicesPage());
 await write('galeria/index.html', galleryPage());
 await write('feluletkezeles/index.html', feluletPage());
-for (const t of TERMEKEK) await write(t.slug + '/index.html', termekLap(t, { head, foot, esc, URL_ALAP, SITE, galleryFiles, galKepek }));
+for (const t of TERMEKEK) await write(t.slug + '/index.html', termekLap(t, { head, foot, esc, URL_ALAP, SITE, galleryFiles, galKepek, telefon }));
 await write('rolam/index.html', aboutPage());
 await write('kapcsolat/index.html', contactPage());
 

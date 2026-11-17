@@ -50,7 +50,15 @@
   document.querySelectorAll('a.mail-link').forEach(function (a) {
     var cim = emailCim(a);
     a.setAttribute('href', 'mailto:' + cim);
-    a.removeAttribute('data-r');
+    a.textContent = cim;
+  });
+
+  // ---------- Telefonszám összeállítása (robotok ellen) ----------
+  // A számjegyek betűkként (a=0 … j=9) szerepelnek a HTML-ben.
+  function dekod(s) { return s.replace(/[a-j]/g, function (c) { return String(c.charCodeAt(0) - 97); }); }
+  document.querySelectorAll('a.tel-link').forEach(function (a) {
+    a.setAttribute('href', 'tel:' + dekod(a.getAttribute('data-t')));
+    if (a.hasAttribute('data-f')) a.textContent = dekod(a.getAttribute('data-f'));
   });
 
   // ---------- Galéria: keresés és kategóriaszűrés ----------

@@ -121,7 +121,7 @@ export const TERMEKEK = [
   },
 ];
 
-export function termekLap(t, { head, foot, esc, URL_ALAP, SITE, galleryFiles, galKepek }) {
+export function termekLap(t, { head, foot, esc, URL_ALAP, SITE, galleryFiles, galKepek, telefon }) {
   const kepek = t.kat ? galKepek(t.kat) : t.kepek;
   const reszek = t.reszek.map(([cim, bek, lista]) => `
       <h2>${esc(cim)}</h2>
@@ -137,7 +137,7 @@ export function termekLap(t, { head, foot, esc, URL_ALAP, SITE, galleryFiles, ga
       name: t.h1,
       description: t.desc,
       areaServed: { '@type': 'City', name: 'Budapest' },
-      provider: { '@type': 'HomeAndConstructionBusiness', name: SITE.name, telephone: SITE.phoneHref, url: URL_ALAP + '/' },
+      provider: { '@type': 'HomeAndConstructionBusiness', name: SITE.name, url: URL_ALAP + '/' },
       url: URL_ALAP + '/' + t.slug + '/',
     },
     faqLd(t.gyik),
@@ -158,7 +158,7 @@ export function termekLap(t, { head, foot, esc, URL_ALAP, SITE, galleryFiles, ga
     <p class="eyebrow"><a href="/szolgaltatasok/">Szolgáltatások</a> / ${esc(t.nav)}</p>
     <h1>${esc(t.h1)}</h1>
     <p class="lede">${esc(t.lede)}</p>
-    <div class="btn-row"><a class="btn" href="/kapcsolat/#ajanlatkeres">Ajánlatot kérek</a><a class="btn ghost" href="tel:${esc(SITE.phoneHref)}">${esc(SITE.phone)}</a></div>
+    <div class="btn-row"><a class="btn" href="/kapcsolat/#ajanlatkeres">Ajánlatot kérek</a>${telefon('btn ghost', 'Hívás')}</div>
   </div>
 </section>
 <section class="tight">
