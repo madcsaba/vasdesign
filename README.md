@@ -19,6 +19,9 @@ fürdőszobák. Statikus oldal, GitHub Pages-en – **Aura Home Design Kft.**
 | `build.mjs` | a `data/` tartalmából generálja a `public/` oldalakat (SEO, JSON-LD, sitemap) |
 | `data/content.json` | a szövegek, a szolgáltatások, az elérhetőségek |
 | `data/by-category.json` | a kategóriánkénti képadatok (fájlnév, méret, WordPress-azonosító) |
+| `data/alt.json` | képenkénti alt-szövegek (SEO, akadálymentesség) |
+| `termekoldalak.mjs` | a termékaloldalak (kerítés, korlát, loft galéria, vas-üveg ajtó) tartalma |
+| `kiskepek.py` | 640 px-es kisképek a `public/img/opt/thumb/` mappába (új kép után futtatandó) |
 | `dedup.mjs` | a duplikált képek kivétele (a legrégebbi WordPress-feltöltés marad) |
 | `galeria-review.mjs` | **helyi vizuális döntő** a duplikátumokról (méretekkel) |
 | `public/` | a generált oldalak és a képek |

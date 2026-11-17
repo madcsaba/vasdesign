@@ -74,8 +74,8 @@ export function feluletLap({ head, foot, esc, URL_ALAP, SITE }) {
   ];
 
   return head({
-    title: `Vas felületkezelés beltérben és kültéren — porfestés, horganyzás, patina | ${SITE.name}`,
-    desc: 'Milyen felületkezelést kapjon a vas galéria, ajtó, kerítés, korlát vagy rács? Porfestés, tűzihorganyzás, duplex rendszer, nyers acél, patina, corten és rozsdamentes acél — beltéri és kültéri összehasonlítás.',
+    title: `Vas felületkezelés: porfestés, horganyzás | ${SITE.name}`,
+    desc: 'Milyen felületkezelést kapjon a kerítés, korlát, galéria vagy ajtó? Porfestés, tűzihorganyzás, duplex rendszer, patina, corten — beltér és kültér.',
     kulcsszavak: 'vas felületkezelés, porfestés, tűzihorganyzás, duplex bevonat, kerítés festés, korlát felületkezelés, kovácsoltvas festék, nyers acél lakk, corten acél, rozsdamentes korlát',
     current: '/feluletkezeles/',
     jsonld: ld,
