@@ -391,7 +391,7 @@ function homePage() {
 <section class="tone">
   <div class="wrap about-grid">
     <div class="about-figure">
-      <img src="/img/opt/${esc(kep('loft-galeria-img-2336-2.webp', galImgs('galeria')[0]))}" alt="Loft galéria fa padlóval és acélpálcás korláttal" title="Loft galéria" width="1000" height="1250" loading="lazy" decoding="async">
+      <img src="/img/opt/${esc(kep('belvarosi-teraszok-img-7438.webp', galImgs('terasz')[0]))}" alt="Napfényes, növényekkel teli belvárosi terasz pihenősarokkal" title="Természet és nyugalom a belvárosban" width="1000" height="1250" loading="lazy" decoding="async">
     </div>
     <div>
       <p class="eyebrow">Rólam</p>
@@ -571,7 +571,7 @@ function aboutPage() {
 <section class="hero">
   <div class="wrap about-grid">
     <div class="about-figure">
-      <img src="/img/opt/${esc(kep('kulter-korlatelem-muhely.webp', galImgs('galeria')[0]))}" alt="Kovácsoltvas korlátelem a műhelyben, beépítés előtt" title="A műhelyből" width="1000" height="1250" fetchpriority="high" decoding="async">
+      <img src="/img/opt/${esc(kep('belvarosi-teraszok-img-7438.webp', galImgs('terasz')[0]))}" alt="Napfényes, növényekkel teli belvárosi terasz pihenősarokkal" title="Természet és nyugalom a belvárosban" width="1000" height="1250" fetchpriority="high" decoding="async">
     </div>
     <div>
       <p class="eyebrow">Rólam</p>
