@@ -350,7 +350,6 @@ function homePage() {
 <section class="tone">
   <div class="wrap">
     <div class="section-head center">
-      <p class="eyebrow">Mit csinálok</p>
       <h2>Szolgáltatások</h2>
       <p class="lede">Az ötlettől a beépítésig — minden, ami vasból, üvegből és szenvedéllyel készül.</p>
     </div>
