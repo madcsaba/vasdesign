@@ -1,6 +1,12 @@
 {
   "referencia-lakas": [
     {
+      "file": "lakasatalakitas-etkezo-polc.webp",
+      "w": 1326,
+      "h": 1600,
+      "bytes": 284328
+    },
+    {
       "file": "lakasatalakitas-img-1785.webp",
       "w": 1280,
       "h": 532,
@@ -178,6 +184,18 @@
     }
   ],
   "furdoszoba": [
+    {
+      "file": "miniwellness-furdo-kotal.webp",
+      "w": 1109,
+      "h": 1539,
+      "bytes": 207204
+    },
+    {
+      "file": "miniwellness-zuhany-fekete-keret.webp",
+      "w": 1062,
+      "h": 1600,
+      "bytes": 106230
+    },
     {
       "file": "miniwellness-furdoszoba-megoldasok-img-1477.webp",
       "w": 1853,
@@ -365,6 +383,12 @@
       "w": 1535,
       "h": 1440,
       "bytes": 329080
+    },
+    {
+      "file": "kulter-geometrikus-racs.webp",
+      "w": 1103,
+      "h": 1500,
+      "bytes": 283236
     },
     {
       "file": "kulter-francia-erkely.webp",
