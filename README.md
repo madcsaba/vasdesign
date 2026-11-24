@@ -3,7 +3,7 @@
 Egyedi tervezésű vas- és kovácsoltvas elemek, térelválasztók, galériák és mini wellness
 fürdőszobák. Statikus oldal, GitHub Pages-en – **Aura Home Design Kft.**
 
-**Élő oldal:** https://madcsaba.github.io/vasdesign/
+**Élő oldal:** https://vasdesign.hu/
 
 ## Oldalak
 
