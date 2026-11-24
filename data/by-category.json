@@ -355,16 +355,16 @@
   ],
   "kulter": [
     {
-      "file": "kulter-lepcsokorlat-kovacsoltvas.webp",
-      "w": 1535,
-      "h": 1440,
-      "bytes": 329080
-    },
-    {
       "file": "kulter-szecesszios-kerites.webp",
       "w": 1600,
       "h": 1200,
       "bytes": 329908
+    },
+    {
+      "file": "kulter-lepcsokorlat-kovacsoltvas.webp",
+      "w": 1535,
+      "h": 1440,
+      "bytes": 329080
     },
     {
       "file": "kulter-francia-erkely.webp",
