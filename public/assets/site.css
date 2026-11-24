@@ -477,3 +477,9 @@ form { display: grid; gap: 16px; }
 .jogi { max-width: 760px; }
 .jogi h2 { font-size: 1.25rem; margin-top: 1.6em; }
 .foot-bottom a { color: inherit; }
+
+/* Minden szöveg kapitális (csupa nagybetű); a beviteli mezőkbe írt szöveg nem */
+body { text-transform: uppercase; }
+h1, h2, h3, h4 { letter-spacing: .005em; }
+p, li, td, th, summary, label, .lede, .note, .card-body p { letter-spacing: .025em; }
+input, textarea, select, option { text-transform: none; }
