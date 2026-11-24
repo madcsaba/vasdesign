@@ -358,8 +358,11 @@ form { display: grid; gap: 16px; }
    v2 — sötét „acél” hero, szolgáltatáscsoportok, felületkezelés
    ============================================================ */
 .hero-dark { background: var(--steel); color: var(--steel-ink); position: relative; overflow: hidden; }
-.hero-dark::before { content: ""; position: absolute; left: -6%; bottom: -14%; width: 58%; aspect-ratio: 618 / 284;
-  background: url(../img/logo-mark-paper.svg) no-repeat center / contain; opacity: .045; pointer-events: none; }
+.hero-dark::before { content: ""; position: absolute;
+  /* a tartalom bal széléhez igazítva, nagy kijelzőn sem nő túl */
+  left: max(16px, calc(50% - var(--maxw) / 2 + 24px)); bottom: -34px;
+  width: clamp(200px, 22vw, 340px); aspect-ratio: 618 / 284;
+  background: url(../img/logo-mark-paper.svg) no-repeat center / contain; opacity: .06; pointer-events: none; }
 .hero-dark .wrap { position: relative; }
 .hero-dark h1 { color: #fff; }
 .hero-dark .lede { color: #cdc7bf; }
