@@ -57,9 +57,13 @@
         </ul>
       </div>
       <div id="ajanlatkeres">
-        <form class="ajanlat-form" novalidate>
+        <form class="ajanlat-form" novalidate data-action="https://docs.google.com/forms/d/e/1FAIpQLSdUCR2_VbH2kbXMhcmfE9td7rZHr7whLBHx20tpwaieO0VNvw/formResponse" data-mezok="{&quot;nev&quot;:&quot;entry.751482235&quot;,&quot;email&quot;:&quot;entry.1761400670&quot;,&quot;telefon&quot;:&quot;entry.1141871470&quot;,&quot;tipus&quot;:&quot;entry.512883543&quot;,&quot;meret&quot;:&quot;entry.1793489777&quot;,&quot;hely&quot;:&quot;entry.952315369&quot;,&quot;felulet&quot;:&quot;entry.1369542305&quot;,&quot;uzenet&quot;:&quot;entry.1322509839&quot;,&quot;adatkezeles&quot;:&quot;entry.719920041&quot;}">
           <div class="field"><label for="nev">Név</label><input id="nev" name="nev" type="text" required autocomplete="name"></div>
-          <div class="field"><label for="email">E-mail cím</label><input id="email" name="email" type="email" required autocomplete="email"></div>
+          <div class="field-row">
+            <div class="field"><label for="email">E-mail cím</label><input id="email" name="email" type="email" required autocomplete="email"></div>
+            <div class="field"><label for="telefon">Telefonszám <span class="note">(nem kötelező)</span></label><input id="telefon" name="telefon" type="tel" autocomplete="tel"></div>
+          </div>
+          <div class="hp" aria-hidden="true"><label for="weboldal">Ezt a mezőt hagyja üresen</label><input id="weboldal" name="weboldal" type="text" tabindex="-1" autocomplete="off"></div>
           <div class="field-row">
             <div class="field"><label for="tipus">Mire kér ajánlatot?</label><select id="tipus" name="tipus">
               <option>Galéria, lépcső</option><option>Vas-üveg ajtó, térelválasztó</option><option>Kerítés, kapu</option><option>Korlát</option><option>Ablakrács, biztonsági rács</option><option>Előtető</option><option>Polc, bútor, egyéb vas elem</option><option>Fürdőszoba, terasz, lakásátalakítás</option><option>Régi vasszerkezet felújítása</option>
@@ -75,8 +79,10 @@
             <option>Még nem tudom, kérek javaslatot</option><option>Porfestés</option><option>Tűzihorganyzás + porfestés (duplex)</option><option>Tűzihorganyzás</option><option>Nyers acél, viasz vagy lakk</option><option>Kovácsoltvas-hatású / vascsillám festés</option><option>Patinázott, antik hatás</option><option>Corten acél</option><option>Rozsdamentes acél</option>
           </select><span class="note"><a href="/vasdesign/feluletkezeles/">Melyik mire való?</a></span></div>
           <div class="field"><label for="uzenet">Üzenet</label><textarea id="uzenet" name="uzenet" rows="5" required placeholder="Stílus, szín, határidő, helyszín (kerület)…"></textarea></div>
+          <label class="consent"><input type="checkbox" name="adatkezeles" value="Elolvastam az adatkezelési tájékoztatót, és hozzájárulok, hogy az adataimat az ajánlatkérés megválaszolásához kezeljék." required> <span>Elolvastam az <a href="/vasdesign/adatkezeles/">adatkezelési tájékoztatót</a>, és hozzájárulok, hogy az adataimat az ajánlatkérés megválaszolásához kezeljék.</span></label>
           <button class="btn" type="submit">Ajánlatkérés küldése</button>
-          <p class="note">Az üzenet az Ön levelezőprogramjában nyílik meg; fotót vagy vázlatot ott csatolhat hozzá. Telefonon is elérhető vagyok: <a class="tel-link " href="#" rel="nofollow" data-t="+dghaebbdcda" data-f="+dg ha ebb dcda">Telefonszám megjelenítése</a>.</p>
+          <p class="form-status" role="status" aria-live="polite" hidden></p>
+          <p class="note">Fotót vagy vázlatot a válaszlevelemre küldhet. Telefonon is elérhető vagyok: <a class="tel-link " href="#" rel="nofollow" data-t="+dghaebbdcda" data-f="+dg ha ebb dcda">Telefonszám megjelenítése</a>.</p>
         </form>
       </div>
     </div>
@@ -121,6 +127,7 @@
     </div>
     <div class="foot-bottom">
       <span>© 2026 Aura Home Design Kft. — Vasdesign. Minden jog fenntartva.</span>
+      <a href="/vasdesign/adatkezeles/">Adatkezelési tájékoztató</a>
     </div>
   </div>
 </footer>

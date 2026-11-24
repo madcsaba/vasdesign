@@ -177,31 +177,35 @@
     apply();
   }
 
-  // ---------- Ajánlatkérő űrlap → saját levelezőprogram ----------
+  // ---------- Ajánlatkérő űrlap → Google Űrlap (háttérben küldve) ----------
   var form = document.querySelector('.ajanlat-form');
   if (form) {
+    var allapot = form.querySelector('.form-status');
+    var gomb = form.querySelector('button[type=submit]');
+    var uzen = function (t, hiba) { allapot.hidden = false; allapot.textContent = t; allapot.classList.toggle('err', !!hiba); };
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      var mezok = function (n) { return (form.querySelector('[name=' + n + ']') || {}).value || ''; };
-      var nev = mezok('nev'), email = mezok('email'), targy = mezok('targy'), uzenet = mezok('uzenet');
-      if (!nev || !email || !uzenet) {
-        form.reportValidity && form.reportValidity();
-        return;
-      }
-      var links = document.querySelectorAll('a.mail-link');
-      var cim = links.length ? emailCim(links[0]) : '';
-      var tipus = mezok('tipus'), meret = mezok('meret'), felulet = mezok('felulet');
-      var helyEl = form.querySelector('[name=hely]:checked');
-      var targyMezo = targy || ('Ajánlatkérés — ' + (tipus ? tipus + ' — ' : '') + nev);
-      var test = 'Név: ' + nev + '\nE-mail: ' + email +
-        (tipus ? '\nTípus: ' + tipus : '') +
-        (helyEl ? '\nHely: ' + helyEl.value : '') +
-        (meret ? '\nMéret: ' + meret : '') +
-        (felulet ? '\nFelületkezelés: ' + felulet : '') +
-        '\n\n' + uzenet;
-      window.location.href = 'mailto:' + cim +
-        '?subject=' + encodeURIComponent(targyMezo) +
-        '&body=' + encodeURIComponent(test);
+      if (!form.checkValidity()) { form.reportValidity && form.reportValidity(); return; }
+      if (form.weboldal && form.weboldal.value) return; // robot
+      var mezok = JSON.parse(form.getAttribute('data-mezok'));
+      var adat = new URLSearchParams();
+      Object.keys(mezok).forEach(function (n) {
+        var el = form.querySelector('[name=' + n + ']');
+        if (!el) return;
+        if (el.type === 'radio') el = form.querySelector('[name=' + n + ']:checked');
+        if (el && el.type === 'checkbox' && !el.checked) return;
+        if (el && el.value) adat.append(mezok[n], el.value);
+      });
+      gomb.disabled = true; uzen('Küldés…');
+      fetch(form.getAttribute('data-action'), { method: 'POST', mode: 'no-cors', body: adat })
+        .then(function () {
+          form.querySelectorAll('.field, .field-row, .choice, .consent, button').forEach(function (x) { x.hidden = true; });
+          uzen('Köszönöm, megkaptam az üzenetét. Hamarosan jelentkezem.');
+        })
+        .catch(function () {
+          gomb.disabled = false;
+          uzen('Az üzenetet most nem sikerült elküldeni. Kérem, próbálja újra, vagy hívjon telefonon.', true);
+        });
     });
   }
 

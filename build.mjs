@@ -215,6 +215,7 @@ const foot = () => `
     </div>
     <div class="foot-bottom">
       <span>© ${new Date().getFullYear()} ${esc(SITE.company)} — ${esc(SITE.name)}. Minden jog fenntartva.</span>
+      <a href="/adatkezeles/">Adatkezelési tájékoztató</a>
     </div>
   </div>
 </footer>
@@ -602,6 +603,36 @@ function aboutPage() {
 </section>` + foot();
 }
 
+// ---------- Adatkezelési tájékoztató (vázlat – jogi átnézésre) ----------
+function privacyPage() {
+  const sor = (cim, ...p) => `<h2>${esc(cim)}</h2>` + p.map((x) => `<p>${x}</p>`).join('');
+  return head({
+    title: `Adatkezelési tájékoztató | ${SITE.name}`,
+    desc: `A ${SITE.name} weboldal ajánlatkérő űrlapján megadott adatok kezelése: milyen adatot, mire, meddig és kinek a közreműködésével kezelünk.`,
+    current: '/adatkezeles/',
+  }) + `
+<section class="hero tight">
+  <div class="wrap section-head">
+    <p class="eyebrow">Jogi információ</p>
+    <h1>Adatkezelési tájékoztató</h1>
+    <p class="lede">Ez a tájékoztató azt írja le, mi történik az ajánlatkérő űrlapon megadott adatokkal.</p>
+  </div>
+</section>
+<section class="tight">
+  <div class="wrap jogi">
+    ${sor('Az adatkezelő', `${esc(SITE.company)} (${esc(SITE.name)})<br>Cím: ${esc(SITE.address)}<br>E-mail: ${emailTitkositott()}`)}
+    ${sor('Milyen adatokat kezelünk?', 'Az ajánlatkérő űrlapon megadott nevet, e-mail címet, telefonszámot (ha megadja), valamint az ajánlatkéréshez megadott adatokat: a kért munka típusát, méretét, helyét, a felületkezelést és az üzenet szövegét.')}
+    ${sor('Mire használjuk?', 'Kizárólag az ajánlatkérés megválaszolására, a felmérés és az árajánlat egyeztetésére. Hírlevelet nem küldünk, az adatokat harmadik félnek nem adjuk el.')}
+    ${sor('Mi az adatkezelés jogalapja?', 'Az Ön hozzájárulása (GDPR 6. cikk (1) bekezdés a) pont), amelyet az űrlap elküldésekor a jelölőnégyzettel ad meg. A hozzájárulást bármikor visszavonhatja egy e-mailben; ez nem érinti a visszavonás előtti adatkezelés jogszerűségét.')}
+    ${sor('Meddig őrizzük az adatokat?', 'Az ajánlatkérés lezárását követő 1 évig. Ha az ajánlatkérésből megrendelés lesz, az adatokat a szerződéshez és a számviteli jogszabályokhoz szükséges ideig őrizzük.')}
+    ${sor('Kik férnek hozzá az adatokhoz?', 'Az adatokat kizárólag mi kezeljük. Az űrlap tárolásához és az értesítő e-mailekhez a Google szolgáltatásait használjuk (Google Űrlap, Google Táblázat, Gmail; Google Ireland Limited), a weboldalt a GitHub Pages szolgáltatja (GitHub, Inc.). A látogatottságot a GoatCounter méri, sütik és személyes adatok tárolása nélkül.')}
+    ${sor('Milyen jogai vannak?', 'Kérheti, hogy tájékoztassuk az Önről kezelt adatokról, kérheti azok helyesbítését, törlését vagy kezelésük korlátozását, illetve az adatok átadását (adathordozhatóság). Kérését a fenti e-mail címre küldheti; 30 napon belül válaszolunk.')}
+    ${sor('Hová fordulhat panasszal?', 'Nemzeti Adatvédelmi és Információszabadság Hatóság (NAIH), 1055 Budapest, Falk Miksa utca 9–11., <a href="https://www.naih.hu" rel="noopener">www.naih.hu</a>. Bírósághoz is fordulhat; a pert a lakóhelye szerinti törvényszék előtt is megindíthatja.')}
+    <p class="note">Hatályos: ${new Date().toISOString().slice(0, 10)}.</p>
+  </div>
+</section>` + foot();
+}
+
 function contactPage() {
   const ld = [{
     '@context': 'https://schema.org',
@@ -647,9 +678,13 @@ function contactPage() {
         </ul>
       </div>
       <div id="ajanlatkeres">
-        <form class="ajanlat-form" novalidate>
+        <form class="ajanlat-form" novalidate data-action="${esc(SITE.urlap.action)}" data-mezok="${esc(JSON.stringify(SITE.urlap.mezok))}">
           <div class="field"><label for="nev">Név</label><input id="nev" name="nev" type="text" required autocomplete="name"></div>
-          <div class="field"><label for="email">E-mail cím</label><input id="email" name="email" type="email" required autocomplete="email"></div>
+          <div class="field-row">
+            <div class="field"><label for="email">E-mail cím</label><input id="email" name="email" type="email" required autocomplete="email"></div>
+            <div class="field"><label for="telefon">Telefonszám <span class="note">(nem kötelező)</span></label><input id="telefon" name="telefon" type="tel" autocomplete="tel"></div>
+          </div>
+          <div class="hp" aria-hidden="true"><label for="weboldal">Ezt a mezőt hagyja üresen</label><input id="weboldal" name="weboldal" type="text" tabindex="-1" autocomplete="off"></div>
           <div class="field-row">
             <div class="field"><label for="tipus">Mire kér ajánlatot?</label><select id="tipus" name="tipus">
               ${['Galéria, lépcső', 'Vas-üveg ajtó, térelválasztó', 'Kerítés, kapu', 'Korlát', 'Ablakrács, biztonsági rács', 'Előtető', 'Polc, bútor, egyéb vas elem', 'Fürdőszoba, terasz, lakásátalakítás', 'Régi vasszerkezet felújítása'].map((x) => `<option>${esc(x)}</option>`).join('')}
@@ -665,8 +700,10 @@ function contactPage() {
             ${['Még nem tudom, kérek javaslatot', 'Porfestés', 'Tűzihorganyzás + porfestés (duplex)', 'Tűzihorganyzás', 'Nyers acél, viasz vagy lakk', 'Kovácsoltvas-hatású / vascsillám festés', 'Patinázott, antik hatás', 'Corten acél', 'Rozsdamentes acél'].map((x) => `<option>${esc(x)}</option>`).join('')}
           </select><span class="note"><a href="/feluletkezeles/">Melyik mire való?</a></span></div>
           <div class="field"><label for="uzenet">Üzenet</label><textarea id="uzenet" name="uzenet" rows="5" required placeholder="Stílus, szín, határidő, helyszín (kerület)…"></textarea></div>
+          <label class="consent"><input type="checkbox" name="adatkezeles" value="${esc(SITE.urlap.hozzajarulas)}" required> <span>Elolvastam az <a href="/adatkezeles/">adatkezelési tájékoztatót</a>, és hozzájárulok, hogy az adataimat az ajánlatkérés megválaszolásához kezeljék.</span></label>
           <button class="btn" type="submit">Ajánlatkérés küldése</button>
-          <p class="note">Az üzenet az Ön levelezőprogramjában nyílik meg; fotót vagy vázlatot ott csatolhat hozzá. Telefonon is elérhető vagyok: ${telefon()}.</p>
+          <p class="form-status" role="status" aria-live="polite" hidden></p>
+          <p class="note">Fotót vagy vázlatot a válaszlevelemre küldhet. Telefonon is elérhető vagyok: ${telefon()}.</p>
         </form>
       </div>
     </div>
@@ -698,6 +735,7 @@ await write('feluletkezeles/index.html', feluletPage());
 for (const t of TERMEKEK) await write(t.slug + '/index.html', termekLap(t, { head, foot, esc, URL_ALAP, SITE, galleryFiles, galKepek, telefon }));
 await write('rolam/index.html', aboutPage());
 await write('kapcsolat/index.html', contactPage());
+await write('adatkezeles/index.html', privacyPage());
 
 // 404 (GitHub Pages automatikusan ezt szolgálja ki)
 await write('404.html', head({
@@ -727,6 +765,7 @@ const lapok = [
   ...TERMEKEK.map((t) => ['/' + t.slug + '/', '0.9']),
   ['/rolam/', '0.6'],
   ['/kapcsolat/', '0.8'],
+  ['/adatkezeles/', '0.3'],
 ];
 await writeFile(path.join(OUT, 'robots.txt'),
   `User-agent: *\nAllow: /\n\nSitemap: ${URL_ALAP}/sitemap.xml\n`);
@@ -738,7 +777,7 @@ await writeFile(path.join(OUT, 'sitemap.xml'),
 // Jekyll tiltás a GitHub Pages-en (a .gitignore-ban lévő mappák miatt is jó)
 await writeFile(path.join(OUT, '.nojekyll'), '');
 
-console.log(`✓ ${7 + TERMEKEK.length} oldal + sitemap.xml + robots.txt + 404.html generálva`);
+console.log(`✓ ${8 + TERMEKEK.length} oldal + sitemap.xml + robots.txt + 404.html generálva`);
 console.log('  képek kategóriánként:', Object.entries(CAT).map(([k, v]) => `${k}=${v.length}`).join(', '));
 
 // ---------- duplikált képek ellenőrzése ----------
