@@ -130,9 +130,7 @@ function head({ title, desc, current, kulcsszavak, jsonld = [] }) {
   const navLinks = NAV.map(([href, label]) =>
     `<a href="${href}"${current === href ? ' aria-current="page"' : ''}>${esc(label)}</a>`).join('');
   const kanonikus = URL_ALAP + (current === '/' ? '/' : current);
-  const ogKep = URL_ALAP + (galImgs('referencia-lakas')[0]
-    ? '/img/opt/' + galImgs('referencia-lakas')[0]
-    : '/assets/favicon.svg');
+  const ogKep = URL_ALAP + '/img/og.jpg';
   const ldSorok = jsonld.map((o) =>
     `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join('\n');
 
@@ -146,7 +144,7 @@ function head({ title, desc, current, kulcsszavak, jsonld = [] }) {
 <meta name="author" content="${esc(SITE.company)}">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="${esc(kanonikus)}">
-<meta name="theme-color" content="#faf8f5">
+<meta name="theme-color" content="#141312">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:type" content="website">
@@ -158,16 +156,17 @@ function head({ title, desc, current, kulcsszavak, jsonld = [] }) {
 <meta name="twitter:title" content="${esc(title)}">
 <meta name="twitter:description" content="${esc(desc)}">
 <meta name="twitter:image" content="${esc(ogKep)}">
-<link rel="preload" href="/assets/fonts/jost-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/figtree-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site.css">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 ${ldSorok}
 </head>
 <body>
 <a class="skip" href="#main">Ugrás a tartalomra</a>
 <header class="site-head" id="top">
   <div class="wrap head-in">
-    <a class="brand" href="/" aria-label="${esc(SITE.name)} — főoldal"><b>VASDESIGN</b><span>${esc(SITE.tagline.split(',')[0])}</span></a>
+    <a class="brand" href="/" aria-label="${esc(SITE.name)} — főoldal"><svg viewBox="0 0 618 284" aria-hidden="true" focusable="false"><path fill="currentColor" d="M227,0L284,0L284,284C127,284 0,157 0,0L57,0C57,106 129,195 227,220L227,0ZM391,284L335,284L335,0C491,0 618,127 618,284L561,284C561,178 489,89 391,64L391,284Z"/></svg><span class="brand-text"><b>VASDESIGN</b><span>${esc(SITE.tagline.split(',')[0])}</span></span></a>
     <button class="nav-toggle" aria-expanded="false" aria-controls="nav">Menü</button>
     <nav class="nav" id="nav" aria-label="Fő navigáció">
       ${navLinks}
@@ -184,7 +183,7 @@ const foot = () => `
   <div class="wrap">
     <div class="foot-grid">
       <div class="foot-brand">
-        <b>VASDESIGN</b>
+        <b><svg viewBox="0 0 618 284" aria-hidden="true" focusable="false"><path fill="currentColor" d="M227,0L284,0L284,284C127,284 0,157 0,0L57,0C57,106 129,195 227,220L227,0ZM391,284L335,284L335,0C491,0 618,127 618,284L561,284C561,178 489,89 391,64L391,284Z"/></svg>VASDESIGN</b>
         <p>Egyedi tervezésű vas- és kovácsoltvas elemek, valamint fürdők belsőépítészeti kialakítása.</p>
       </div>
       <div class="foot-col">
@@ -234,7 +233,8 @@ function vallalasLd() {
     legalName: SITE.company,
     description: SITE.tagline,
     url: URL_ALAP + '/',
-    image: URL_ALAP + (galImgs('referencia-lakas')[0] ? '/img/opt/' + galImgs('referencia-lakas')[0] : ''),
+    image: URL_ALAP + '/img/og.jpg',
+    logo: URL_ALAP + '/img/logo-lockup.svg',
     priceRange: 'Egyedi árajánlat alapján',
     address: {
       '@type': 'PostalAddress',
