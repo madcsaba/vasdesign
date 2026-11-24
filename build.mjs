@@ -342,7 +342,7 @@ function homePage() {
       </div>
     </div>
     <div class="hero-figure">
-      <img src="/img/opt/${esc(kep('loft-galeria-img-5282.webp', galImgs('galeria')[0]))}" alt="${esc(SITE.name)} referenciamunka — egyedi vas lépcső és loft galéria" title="${esc(SITE.name)} — vas lépcső és galéria" width="1919" height="2560" fetchpriority="high" decoding="async">
+      <img src="/img/opt/${esc(kep('kulter-lepcsokorlat-kovacsoltvas.webp', galImgs('galeria')[0]))}" alt="Díszes kovácsoltvas lépcsőkorlát csigavonalas korlátvéggel, Budapest" title="${esc(SITE.name)} — kovácsoltvas lépcsőkorlát" width="1535" height="1440" style="object-position:75% 50%" fetchpriority="high" decoding="async">
     </div>
   </div>
 </section>
