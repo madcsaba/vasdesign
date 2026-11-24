@@ -10,14 +10,6 @@
   src: url(fonts/figtree-latin-wght-normal.woff2) format("woff2");
   unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
 
-/* Címbetű: Big Shoulders Display (OFL, helyben tárolva) — kapitális, vaskos címekhez */
-@font-face { font-family: "Big Shoulders Display"; font-style: normal; font-display: swap; font-weight: 100 900;
-  src: url(fonts/big-shoulders-display-latin-ext-wght-normal.woff2) format("woff2");
-  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
-@font-face { font-family: "Big Shoulders Display"; font-style: normal; font-display: swap; font-weight: 100 900;
-  src: url(fonts/big-shoulders-display-latin-wght-normal.woff2) format("woff2");
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
-
 :root {
   /* Színpaletta a „GALÉRIÁK ÉS LÉPCSŐK” kreatív alapján:
      krém fal · majdnem-fekete acélpanel · narancs kiemelés, fekete szöveggel */
@@ -44,7 +36,6 @@
   --shadow-lg: 0 2px 6px rgba(20,19,18,.07), 0 24px 60px rgba(20,19,18,.14);
 
   --display: "Figtree", "Segoe UI", Helvetica, Arial, sans-serif;
-  --heading: "Big Shoulders Display", "Arial Narrow", "Roboto Condensed", Impact, sans-serif;
   --body: "Figtree", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
@@ -140,12 +131,10 @@ a:hover { color: var(--accent-dk); }
 }
 
 /* ---------- Tipográfia ---------- */
-h1, h2, h3, h4 { font-family: var(--heading); font-weight: 900; line-height: 1.04; color: var(--ink); margin: 0 0 .5em;
-  letter-spacing: .012em; text-transform: uppercase; text-wrap: balance; }
-h3, h4 { font-weight: 800; letter-spacing: .02em; }
-h1 { font-size: clamp(2.6rem, 6.2vw, 4.4rem); }
-h2 { font-size: clamp(2rem, 4vw, 3rem); }
-h3 { font-size: 1.55rem; }
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 700; line-height: 1.1; color: var(--ink); margin: 0 0 .5em; letter-spacing: -.02em; }
+h1 { font-size: clamp(2.1rem, 5vw, 3.4rem); }
+h2 { font-size: clamp(1.6rem, 3.2vw, 2.3rem); }
+h3 { font-size: 1.28rem; }
 p { margin: 0 0 1.1em; }
 .lede { font-size: clamp(1.08rem, 1.9vw, 1.3rem); color: var(--ink-2); line-height: 1.55; }
 
@@ -208,7 +197,7 @@ section.tight { padding: clamp(40px, 6vw, 72px) 0; }
 .card img { width: 100%; aspect-ratio: 3/2; object-fit: cover; transition: transform .5s ease; }
 .card:hover img { transform: scale(1.04); }
 .card-body { padding: 20px 22px 24px; }
-.card-body h3 { margin-bottom: .35em; font-size: 1.5rem; }
+.card-body h3 { margin-bottom: .35em; font-size: 1.2rem; }
 .card-body p { color: var(--ink-2); font-size: 15px; margin: 0; }
 .card .more { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; font-size: 14px; font-weight: 500; color: var(--accent-ink); }
 .card .more::after { content: "→"; transition: transform .2s ease; }
@@ -280,7 +269,7 @@ section.tight { padding: clamp(40px, 6vw, 72px) 0; }
 }
 .step::after { content: ""; position: absolute; top: 33px; left: 0; right: 0; height: 1px;
   background: linear-gradient(90deg, var(--accent) 0 56px, var(--line) 56px); }
-.step h3 { font-size: 1.35rem; margin-bottom: .4em; }
+.step h3 { font-size: 1.1rem; margin-bottom: .4em; }
 .step p { font-size: 14.5px; color: var(--ink-2); margin: 0; }
 
 /* ---------- Idézet / rólam ---------- */
@@ -337,7 +326,7 @@ form { display: grid; gap: 16px; }
 .pillars { display: grid; gap: 18px; grid-template-columns: repeat(3,1fr); }
 @media (max-width: 720px) { .pillars { grid-template-columns: 1fr; } }
 .pillar { padding: 26px 24px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
-.pillar h3 { font-size: 1.4rem; margin-bottom: .4em; }
+.pillar h3 { font-size: 1.12rem; margin-bottom: .4em; }
 .pillar p { font-size: 15px; color: var(--ink-2); margin: 0; }
 
 .note { font-size: 14px; color: var(--ink-3); }
@@ -405,7 +394,7 @@ form { display: grid; gap: 16px; }
 .grid-3.small .card-body p { font-size: 14.5px; }
 .group-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin: 56px 0 20px; border-top: 1px solid var(--line); padding-top: 22px; }
 .group-head:first-child { margin-top: 0; }
-.group-head h3 { margin: 0; font-size: 1.7rem; }
+.group-head h3 { margin: 0; font-size: 1.35rem; }
 .group-head p { margin: 0; color: var(--ink-3); font-size: 14.5px; }
 
 /* táblázatok (felületkezelés) */
@@ -426,7 +415,7 @@ form { display: grid; gap: 16px; }
 .recs { display: grid; gap: 14px; grid-template-columns: repeat(2, 1fr); }
 @media (max-width: 720px) { .recs { grid-template-columns: 1fr; } }
 .rec { padding: 20px 22px; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); }
-.rec h3 { font-size: 1.35rem; margin-bottom: .3em; }
+.rec h3 { font-size: 1.08rem; margin-bottom: .3em; }
 .rec p { margin: 0; font-size: 15px; color: var(--ink-2); }
 .rec .where { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); display: block; margin-bottom: 4px; }
 
@@ -471,7 +460,7 @@ form { display: grid; gap: 16px; }
 
 /* Termékoldalak */
 .termek-szoveg { align-items: start; }
-.termek-szoveg h2 { font-size: 1.9rem; margin-top: 1.4em; }
+.termek-szoveg h2 { font-size: 1.45rem; margin-top: 1.4em; }
 .termek-szoveg h2:first-child { margin-top: 0; }
 .termek-szoveg .tips { margin-bottom: 1em; }
 .termek-szoveg aside { position: sticky; top: 90px; }
@@ -486,6 +475,5 @@ form { display: grid; gap: 16px; }
 .form-status.err { background: #fbe9e7; color: #8c1d18; }
 .ajanlat-form [hidden] { display: none !important; }
 .jogi { max-width: 760px; }
-.jogi h2 { font-size: 1.6rem; margin-top: 1.6em; }
+.jogi h2 { font-size: 1.25rem; margin-top: 1.6em; }
 .foot-bottom a { color: inherit; }
-.about-grid h1 { font-size: clamp(2.2rem, 4.4vw, 3.2rem); }
