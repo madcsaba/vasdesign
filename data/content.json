@@ -13,7 +13,22 @@
     "hours": "Telefonon 9:00 és 18:00 között állok rendelkezésre.",
     "years": "20+",
     "yearSince": "2004",
-    "url": "https://madcsaba.github.io/vasdesign"
+    "url": "https://madcsaba.github.io/vasdesign",
+    "urlap": {
+      "action": "https://docs.google.com/forms/d/e/1FAIpQLSdUCR2_VbH2kbXMhcmfE9td7rZHr7whLBHx20tpwaieO0VNvw/formResponse",
+      "mezok": {
+        "nev": "entry.751482235",
+        "email": "entry.1761400670",
+        "telefon": "entry.1141871470",
+        "tipus": "entry.512883543",
+        "meret": "entry.1793489777",
+        "hely": "entry.952315369",
+        "felulet": "entry.1369542305",
+        "uzenet": "entry.1322509839",
+        "adatkezeles": "entry.719920041"
+      },
+      "hozzajarulas": "Elolvastam az adatkezelési tájékoztatót, és hozzájárulok, hogy az adataimat az ajánlatkérés megválaszolásához kezeljék."
+    }
   },
   "services": [
     {
