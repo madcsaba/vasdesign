@@ -140,7 +140,7 @@ a:hover { color: var(--accent-dk); }
 }
 
 /* ---------- Tipográfia ---------- */
-h1, h2, h3, h4 { font-family: var(--heading); font-weight: 600; line-height: 1.12; color: var(--ink); margin: 0 0 .5em; letter-spacing: -.02em; }
+h1, h2, h3, h4 { font-family: var(--heading); font-weight: 500; line-height: 1.12; color: var(--ink); margin: 0 0 .5em; letter-spacing: -.02em; }
 h1 { font-size: clamp(2.1rem, 5vw, 3.4rem); }
 h2 { font-size: clamp(1.6rem, 3.2vw, 2.3rem); }
 h3 { font-size: 1.28rem; }
@@ -487,8 +487,5 @@ form { display: grid; gap: 16px; }
 .jogi h2 { font-size: 1.25rem; margin-top: 1.6em; }
 .foot-bottom a { color: inherit; }
 
-/* Minden szöveg kapitális (csupa nagybetű); a beviteli mezőkbe írt szöveg nem */
-body { text-transform: uppercase; }
-h1, h2, h3, h4 { letter-spacing: .035em; }
-p, li, td, th, summary, label, .lede, .note, .card-body p { letter-spacing: .025em; }
-input, textarea, select, option { text-transform: none; }
+/* Csak a címek kapitálisak (csupa nagybetű) */
+h1, h2, h3, h4 { letter-spacing: .035em; text-transform: uppercase; }
