@@ -144,7 +144,7 @@ function head({ title, desc, current, kulcsszavak, jsonld = [] }) {
 <meta name="author" content="${esc(SITE.company)}">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="${esc(kanonikus)}">
-<meta name="theme-color" content="#141312">
+<meta name="theme-color" content="#1b1a18">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:type" content="website">
